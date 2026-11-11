@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Silent Cache Poisoning in LLM Streaming Proxies — Siddharth Srivastava</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand"><a href="../index.html">← Siddharth Srivastava (@sidsri14)</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#services">Services ($60/hr)</a>
+        <a href="../index.html#kits">Starter Kits</a>
+        <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork</a>
+      </nav>
+    </header>
+    <article class="article-body">
+      <h1>Silent Cache Poisoning in LLM Streaming Proxies</h1>
+<p>An LLM proxy can receive HTTP 200, forward several Server-Sent Event chunks,</p>
+<p>and still fail before the stream is complete. Treating the status code as proof</p>
+<p>of a cacheable response turns a transient upstream failure into a persistent,</p>
+<p>replayable partial answer.</p>
+<p>I found this boundary while reviewing StackIntercept, a small Rust</p>
+<p>OpenAI-compatible proxy. It forwards upstream SSE bytes and stores successful</p>
+<p>responses in an exact cache. The initial implementation used the upstream HTTP</p>
+<p>status to decide whether to cache a stream. That is insufficient: after a 200,</p>
+<p><code>bytes_stream()</code> can still yield an error because the upstream connection was</p>
+<p>truncated or reset.</p>
+<h2>The Unsafe Sequence</h2>
+<ol>
+<li>The upstream returns 200 and starts a streamed completion.</li>
+<li>The proxy forwards a few valid <code>data:</code> frames.</li>
+<li>The upstream connection breaks before <code>[DONE]</code>.</li>
+<li>The proxy sends the client a terminal SSE error frame.</li>
+<li>The proxy caches the bytes collected before the error because the initial</li>
+</ol>
+<p>status was successful.</p>
+<p>The next identical request can then receive a cache hit containing an</p>
+<p>incomplete completion, without any indication that it was partial.</p>
+<h2>The Required Invariant</h2>
+<p>For a streamed response, cache insertion needs two conditions:</p>
+<pre><code>initial HTTP response is successful
+AND
+the body stream completed without an error</code></pre>
+<p>StackIntercept now tracks stream completion separately from the HTTP status. On</p>
+<p>a chunk error, it forwards an SSE error frame and marks the stream incomplete.</p>
+<p>The terminal cache-insertion step checks that marker before inserting into the</p>
+<p>exact or semantic cache.</p>
+<p>The relevant implementation is in</p>
+<p><a href="https://github.com/sidsri14/stack-intercept/blob/master/src/main.rs" target="_blank" rel="noopener"><code>src/main.rs</code></a>,</p>
+<p>and the regression test is in</p>
+<p><a href="https://github.com/sidsri14/stack-intercept/blob/master/test_persistence_eviction_sse.py" target="_blank" rel="noopener"><code>test_persistence_eviction_sse.py</code></a>.</p>
+<p>The test serves a deliberately truncated SSE body with a larger declared</p>
+<p><code>Content-Length</code>, verifies that the client receives an error frame and <code>[DONE]</code>,</p>
+<p>then verifies the next identical request is a cache miss rather than a replay</p>
+<p>of partial data.</p>
+<h2>Where Failover Stops</h2>
+<p>StackIntercept's configured fallback is intentionally a single retry before a</p>
+<p>stream has produced body bytes: a connection failure, 429, or configured 5xx</p>
+<p>status can select the fallback request. It does not retry after partial stream</p>
+<p>output. Restarting a different model response after visible tokens have reached</p>
+<p>the client changes the response contract and can duplicate side effects in</p>
+<p>tool-using workflows.</p>
+<p>That is a reliability boundary, not a complete high-availability system. The</p>
+<p>project does not currently provide circuit breaking, health-based load</p>
+<p>balancing, rate limiting, or spend caps.</p>
+<h2>Reproduce</h2>
+<p>From the StackIntercept repository:</p>
+<pre><code>cargo build
+python test_persistence_eviction_sse.py</code></pre>
+<p>The suite uses only a local mock upstream and includes the truncated-stream</p>
+<p>case alongside cache persistence and SSE error-frame checks.</p>
+      <hr />
+      <p><strong>Need production LLM or Solana infrastructure built cleanly?</strong> Hire on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork ($60/hr)</a> or get started immediately with our commercial kit:</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/sidsri14/stack-intercept" target="_blank" rel="noopener">Inspect StackIntercept (Rust Proxy)</a>
+        <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Engineering%20Inquiry">Contact: sidsri1502@gmail.com</a>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preventing Runaway LLM Bills with BullMQ &amp; Budget Kill Switches — Siddharth Srivastava</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand"><a href="../index.html">← Siddharth Srivastava (@sidsri14)</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#services">Services ($60/hr)</a>
+        <a href="../index.html#kits">Starter Kits</a>
+        <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork</a>
+      </nav>
+    </header>
+    <article class="article-body">
+      <hr/>
+<p>title: Preventing Runaway LLM Bills: Building a Resilient AI Worker Queue with Redis, BullMQ, and Model Fallbacks</p>
+<p>published: true</p>
+<p>tags: ai, node, typescript, redis</p>
+<p>canonical_url: https://github.com/sidsri14/resilient-ai-worker-kit</p>
+<hr/>
+<h1>Preventing Runaway LLM Bills: Building a Resilient AI Worker Queue with Redis, BullMQ, and Model Fallbacks</h1>
+<p>Building autonomous agents or AI-driven background tasks is exciting—until a bad retry loop or unexpected 429 rate-limit cascades into a \$2,000 API bill overnight.</p>
+<p>In production, naive API calls with standard <code>try/catch</code> fail for three predictable reasons:</p>
+<ol>
+<li><strong>Cascading Rate Limits:</strong> Hitting OpenAI's TPM (Tokens Per Minute) limit causes concurrent workers to retry simultaneously, intensifying rate limits.</li>
+<li><strong>Zombie Jobs &amp; Runaway Budgets:</strong> Recursive agent loops consume tokens indefinitely without a global kill switch.</li>
+<li><strong>Provider Downtime:</strong> When an upstream provider experiences elevated latencies or 503 outages, the entire application grinds to a halt.</li>
+</ol>
+<p>In this tutorial, we will construct a production-ready <strong>AI Worker Queue</strong> in TypeScript using <strong>BullMQ</strong> and <strong>Redis</strong>, featuring:</p>
+<ul>
+<li><strong>Pre-execution budget kill-switches</strong> (blocking jobs before tokens are spent).</li>
+<li><strong>Multi-model fallback routing</strong> (automatically routing from OpenAI to Anthropic or Groq on 429/500 errors).</li>
+<li><strong>Atomic token consumption accounting</strong>.</li>
+</ul>
+<hr/>
+<h2>🏗️ Architecture Overview</h2>
+<pre><code>flowchart TD
+    A[Incoming Task Request] --&gt; B[BullMQ Job Queue]
+    B --&gt; C{Daily Budget Pre-Check}
+    C -- Exceeds Spend Ceiling --&gt; D[Abort / Kill Switch Triggered]
+    C -- Within Budget Limit --&gt; E[Resilient Multi-Provider Router]
+    E -- Primary 429/Timeout --&gt; F[Fallback Provider: Groq / Anthropic]
+    E -- Primary Success --&gt; G[Worker Output Delivered]
+    F --&gt; G
+    G --&gt; H[Atomic Redis Token Increment]</code></pre>
+<hr/>
+<h2>🛑 Step 1: Redis-Backed Budget Kill Switch</h2>
+<p>Before an expensive prompt is dispatched to an LLM provider, we pre-calculate estimated tokens and verify against an atomic Redis counter:</p>
+<pre><code>export class BudgetManager {
+  private redis: Redis;
+  private keyPrefix = "ai_budget:daily:";
+
+  public async canExecute(estimatedTokens: number): Promise&lt;{ allowed: boolean; currentUsage: number; reason?: string }&gt; {
+    const today = new Date().toISOString().split("T")[0];
+    const key = `${this.keyPrefix}${today}`;
+    const current = parseInt((await this.redis.get(key)) || "0", 10);
+
+    if (current + estimatedTokens &gt; MAX_DAILY_TOKEN_BUDGET) {
+      return {
+        allowed: false,
+        currentUsage: current,
+        reason: `Daily token limit breached: ${current} + ${estimatedTokens} &gt; ${MAX_DAILY_TOKEN_BUDGET}`,
+      };
+    }
+
+    return { allowed: true, currentUsage: current };
+  }
+
+  public async recordUsage(tokens: number): Promise&lt;number&gt; {
+    const today = new Date().toISOString().split("T")[0];
+    const key = `${this.keyPrefix}${today}`;
+    const total = await this.redis.incrby(key, tokens);
+    await this.redis.expire(key, 172800); // 48h TTL
+    return total;
+  }
+}</code></pre>
+<hr/>
+<h2>🔄 Step 2: Resilient Model Fallback Router</h2>
+<p>If your primary provider returns a <code>429 Too Many Requests</code> or <code>500 Internal Error</code>, you shouldn't crash the queue. Instead, fall back to secondary high-availability endpoints seamlessly:</p>
+<pre><code>export class ResilientModelRouter {
+  constructor(private providers: IModelProvider[]) {}
+
+  public async executeWithFailover(req: ModelRequest): Promise&lt;ModelResponse&gt; {
+    for (const provider of this.providers) {
+      try {
+        return await provider.execute(req);
+      } catch (err: any) {
+        console.warn(`[Failover] Provider ${provider.name} failed: ${err.message}. Trying next fallback...`);
+      }
+    }
+    throw new Error(`All fallback providers exhausted for request [${req.id}]`);
+  }
+}</code></pre>
+<hr/>
+<h2>⚡ Step 3: BullMQ Worker Orchestration</h2>
+<p>We bind the budget check and failover router directly into a BullMQ worker process with jittered exponential retries:</p>
+<pre><code>const worker = new Worker&lt;ModelRequest, ModelResponse&gt;(
+  "resilient-ai-jobs",
+  async (job: Job&lt;ModelRequest&gt;) =&gt; {
+    const estimatedTokens = Math.ceil((job.data.prompt.length / 4)) + 500;
+
+    // 1. Budget kill switch check
+    const budgetStatus = await budgetManager.canExecute(estimatedTokens);
+    if (!budgetStatus.allowed) {
+      throw new Error(`[BUDGET_EXCEEDED] ${budgetStatus.reason}`);
+    }
+
+    // 2. Execute with automatic provider failover
+    const response = await router.executeWithFailover(job.data);
+
+    // 3. Atomically account for actual token consumption
+    await budgetManager.recordUsage(response.tokensUsed);
+
+    return response;
+  },
+  { connection: redisConnection, concurrency: 5 }
+);</code></pre>
+<hr/>
+<h2>📦 Open Source Starter &amp; Commercial Edition</h2>
+<p>The complete, working source code is open-sourced on GitHub:</p>
+<p>👉 <a href="https://github.com/sidsri14/resilient-ai-worker-kit" target="_blank" rel="noopener"><strong>GitHub: sidsri14/resilient-ai-worker-kit</strong></a></p>
+<p>For unrestricted internal production &amp; client deployment rights to the full TypeScript source (<code>BudgetManager</code>, <code>ResilientModelRouter</code>, BullMQ worker harness, and Vitest verification suite), grab the <strong>Commercial License</strong> via <a href="https://buy.polar.sh/polar_cl_4mrUXvOPjiB4LEIEBsVyJshejMA8oq7XIHPQV163dbE" target="_blank" rel="noopener">Polar.sh</a>.</p>
+      <hr />
+      <p><strong>Need production LLM or Solana infrastructure built cleanly?</strong> Hire on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork ($60/hr)</a> or get started immediately with our commercial kit:</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://buy.polar.sh/polar_cl_4mrUXvOPjiB4LEIEBsVyJshejMA8oq7XIHPQV163dbE" target="_blank" rel="noopener">Get Resilient AI Worker Kit ($39)</a>
+        <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Engineering%20Inquiry">Contact: sidsri1502@gmail.com</a>
+      </div>
+    </article>
+  </div>
+</body>
+</html>
