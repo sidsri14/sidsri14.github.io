@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Preventing Runaway LLM Bills with BullMQ &amp; Budget Kill Switches — Siddharth Srivastava</title>
+  <title>Redis Usage Checks in a BullMQ Worker — Siddharth Srivastava</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
 </head>
@@ -19,39 +19,34 @@
     </header>
     <article class="article-body">
       <hr/>
-<p>title: Preventing Runaway LLM Bills: Building a Resilient AI Worker Queue with Redis, BullMQ, and Model Fallbacks</p>
-<p>published: true</p>
-<p>tags: ai, node, typescript, redis</p>
-<p>canonical_url: https://github.com/sidsri14/resilient-ai-worker-kit</p>
-<hr/>
-<h1>Preventing Runaway LLM Bills: Building a Resilient AI Worker Queue with Redis, BullMQ, and Model Fallbacks</h1>
-<p>Building autonomous agents or AI-driven background tasks is exciting—until a bad retry loop or unexpected 429 rate-limit cascades into a \$2,000 API bill overnight.</p>
-<p>In production, naive API calls with standard <code>try/catch</code> fail for three predictable reasons:</p>
+<h1>Redis Usage Checks in a BullMQ Worker: Prototype and Concurrency Limits</h1>
+<p>This AI-assisted project note explains a TypeScript worker prototype using BullMQ, Redis usage accounting and sequential mock-provider fallback. It is an independent learning project, not a production deployment case study.</p>
+<p>The examples explore three common failure modes:</p>
 <ol>
-<li><strong>Cascading Rate Limits:</strong> Hitting OpenAI's TPM (Tokens Per Minute) limit causes concurrent workers to retry simultaneously, intensifying rate limits.</li>
-<li><strong>Zombie Jobs &amp; Runaway Budgets:</strong> Recursive agent loops consume tokens indefinitely without a global kill switch.</li>
-<li><strong>Provider Downtime:</strong> When an upstream provider experiences elevated latencies or 503 outages, the entire application grinds to a halt.</li>
+<li><strong>Retries:</strong> Concurrent workers can retry the same failing dependency.</li>
+<li><strong>Usage accounting:</strong> Estimated tokens and recorded usage can diverge, especially across concurrent jobs.</li>
+<li><strong>Provider errors:</strong> A router needs an explicit policy for trying another provider or reporting failure.</li>
 </ol>
-<p>In this tutorial, we will construct a production-ready <strong>AI Worker Queue</strong> in TypeScript using <strong>BullMQ</strong> and <strong>Redis</strong>, featuring:</p>
+<p>The prototype illustrates the following pieces:</p>
 <ul>
-<li><strong>Pre-execution budget kill-switches</strong> (blocking jobs before tokens are spent).</li>
-<li><strong>Multi-model fallback routing</strong> (automatically routing from OpenAI to Anthropic or Groq on 429/500 errors).</li>
-<li><strong>Atomic token consumption accounting</strong>.</li>
+<li>A usage precheck before a job runs.</li>
+<li>A sequential provider interface and fallback loop. The package includes mock providers; live model API adapters are not bundled.</li>
+<li>An atomic Redis increment after the response, separate from the earlier precheck.</li>
 </ul>
 <hr/>
 <h2>🏗️ Architecture Overview</h2>
 <pre><code>flowchart TD
     A[Incoming Task Request] --&gt; B[BullMQ Job Queue]
-    B --&gt; C{Daily Budget Pre-Check}
-    C -- Exceeds Spend Ceiling --&gt; D[Abort / Kill Switch Triggered]
-    C -- Within Budget Limit --&gt; E[Resilient Multi-Provider Router]
-    E -- Primary 429/Timeout --&gt; F[Fallback Provider: Groq / Anthropic]
-    E -- Primary Success --&gt; G[Worker Output Delivered]
+    B --&gt; C{Daily Usage Precheck}
+    C -- Estimate Exceeds Threshold --&gt; D[Reject This Attempt]
+    C -- Precheck Passes --&gt; E[Sequential Mock-Provider Router]
+    E -- Primary Mock Throws --&gt; F[Next Configured Mock Provider]
+    E -- Mock Success --&gt; G[Return Mock Output]
     F --&gt; G
-    G --&gt; H[Atomic Redis Token Increment]</code></pre>
+    G --&gt; H[Record Usage After Execution]</code></pre>
 <hr/>
-<h2>🛑 Step 1: Redis-Backed Budget Kill Switch</h2>
-<p>Before an expensive prompt is dispatched to an LLM provider, we pre-calculate estimated tokens and verify against an atomic Redis counter:</p>
+<h2>Step 1: Redis Usage Precheck and Accounting</h2>
+<p>The sketch reads existing daily usage, compares an estimate, and records returned usage afterward. Two workers can both pass the check before either records usage. Atomic <code>INCRBY</code> does not make that overall sequence atomic, so this is not a guaranteed spending cap.</p>
 <pre><code>export class BudgetManager {
   private redis: Redis;
   private keyPrefix = "ai_budget:daily:";
@@ -82,7 +77,7 @@
 }</code></pre>
 <hr/>
 <h2>🔄 Step 2: Resilient Model Fallback Router</h2>
-<p>If your primary provider returns a <code>429 Too Many Requests</code> or <code>500 Internal Error</code>, you shouldn't crash the queue. Instead, fall back to secondary high-availability endpoints seamlessly:</p>
+<p>The loop below tries the configured providers in order and throws if all fail. Error classification, timeouts and real API adapters require additional work; the loop alone does not establish availability.</p>
 <pre><code>export class ResilientModelRouter {
   constructor(private providers: IModelProvider[]) {}
 
@@ -99,7 +94,7 @@
 }</code></pre>
 <hr/>
 <h2>⚡ Step 3: BullMQ Worker Orchestration</h2>
-<p>We bind the budget check and failover router directly into a BullMQ worker process with jittered exponential retries:</p>
+<p>This worker sketch combines the separate precheck, provider call and usage update. The constructor shown here does not configure retry backoff or jitter. Configure and test retry behaviour explicitly for the intended job type.</p>
 <pre><code>const worker = new Worker&lt;ModelRequest, ModelResponse&gt;(
   "resilient-ai-jobs",
   async (job: Job&lt;ModelRequest&gt;) =&gt; {
@@ -122,12 +117,13 @@
   { connection: redisConnection, concurrency: 5 }
 );</code></pre>
 <hr/>
-<h2>📦 Open Source Starter &amp; Commercial Edition</h2>
-<p>The complete, working source code is open-sourced on GitHub:</p>
+<h2>Source, Package and Verification Scope</h2>
+<p>The public source, setup requirements and current limitations are documented on GitHub:</p>
 <p>👉 <a href="https://github.com/sidsri14/resilient-ai-worker-kit" target="_blank" rel="noopener"><strong>GitHub: sidsri14/resilient-ai-worker-kit</strong></a></p>
-<p>For unrestricted internal production &amp; client deployment rights to the full TypeScript source (<code>BudgetManager</code>, <code>ResilientModelRouter</code>, BullMQ worker harness, and Vitest verification suite), grab the <strong>Commercial License</strong> via <a href="https://buy.polar.sh/polar_cl_4mrUXvOPjiB4LEIEBsVyJshejMA8oq7XIHPQV163dbE" target="_blank" rel="noopener">Polar.sh</a>.</p>
+<p>The corrected v1.1.0 ZIP includes source, compiled JavaScript, mock-based tests and the unchanged MIT license. Mock tests and a successful compiler run do not verify a live Redis deployment, provider billing or a concurrent spending reservation. Read <code>README.md</code> and <code>PACKAGE-VERIFICATION.md</code> in the package.</p>
+<p>The <a href="https://buy.polar.sh/polar_cl_4mrUXvOPjiB4LEIEBsVyJshejMA8oq7XIHPQV163dbE" target="_blank" rel="noopener">$39 packaged offering on Polar</a> uses public source; it does not grant exclusive access, a new commercial license or an attribution waiver. Confirm any setup-support scope before purchase.</p>
       <hr />
-      <p><strong>Need production LLM or Solana infrastructure built cleanly?</strong> Hire on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork ($60/hr)</a> or get started immediately with our commercial kit:</p>
+      <p><strong>Have a scoped backend or developer-tooling task?</strong> Discuss the deliverable, acceptance checks and payment terms on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork (asking rate: $60/hr)</a>, or review the prototype package below.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://buy.polar.sh/polar_cl_4mrUXvOPjiB4LEIEBsVyJshejMA8oq7XIHPQV163dbE" target="_blank" rel="noopener">Get Resilient AI Worker Kit ($39)</a>
         <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Engineering%20Inquiry">Contact: sidsri1502@gmail.com</a>

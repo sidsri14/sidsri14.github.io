@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cutting AI Inference Bills with Hybrid On-Device Routing — Siddharth Srivastava</title>
+  <title>Hybrid Routing: Prototype and Privacy Limits — Siddharth Srivastava</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
 </head>
@@ -19,22 +19,17 @@
     </header>
     <article class="article-body">
       <hr/>
-<p>title: Slashing AI API Costs by 70%: Building a Production Hybrid Router with Local Gemma 2B and Cloud Gemini</p>
-<p>published: true</p>
-<p>tags: ai, typescript, webdev, architecture, edge</p>
-<p>canonical_url: https://github.com/sidsri14/hybrid-ai-router</p>
-<hr/>
-<h1>Slashing AI API Costs by 70%: Building a Production Hybrid Router with Local Gemma 2B and Cloud Gemini</h1>
-<p>Most AI apps today make a financially catastrophic mistake: they send <strong>100% of user queries</strong> to remote frontier cloud APIs.</p>
-<p>Whether a user asks for a simple 10-word text summary, parses a local timestamp, or submits confidential credentials, the app triggers an external HTTP POST to OpenAI or Gemini. This results in:</p>
+<h1>Hybrid Routing: A TypeScript Prototype and Its Privacy Limits</h1>
+<p>This AI-assisted project note explores a routing sketch for local and cloud inference. It is independent prototype work, not a measured production case study.</p>
+<p>A routing policy needs to account for several trade-offs:</p>
 <ol>
-<li><strong>Unbounded Monthly Cloud Bills</strong>: At scale, simple queries eat millions of tokens at $0.35–$2.50+ per million.</li>
-<li><strong>Artificial Latency</strong>: Adding 300ms–1500ms network round-trip overhead to routine text formatting.</li>
-<li><strong>Severe Vulnerability to Network Drops</strong>: Mobile users go through a tunnel or airplane mode and the app completely crashes.</li>
-<li><strong>PII Leakage</strong>: Sending sensitive internal keys, emails, and financial identifiers over public networks.</li>
+<li><strong>Cost:</strong> Cloud usage and local hardware both have costs that depend on the workload.</li>
+<li><strong>Latency:</strong> Model loading, hardware, network conditions and output length affect response time.</li>
+<li><strong>Availability:</strong> Both local and cloud paths can fail.</li>
+<li><strong>Privacy:</strong> Classification, fallback policy and actual data flow must all enforce the required boundary.</li>
 </ol>
-<p>The solution is not abandoning cloud models. The solution is <strong>Hybrid Inference Routing</strong>.</p>
-<p>In this article, we’ll construct <strong><code>hybrid-ai-router</code></strong>, a lightweight TypeScript engine that runs routine tasks locally on-device for <strong>$0.00</strong> and <strong>&lt;30ms latency</strong>, while seamlessly escalating complex reasoning, coding, and tool-calling to Google Gemini in the cloud.</p>
+<p>The sketches below illustrate a possible classifier and fallback flow. They are not proof of a complete local inference adapter, a particular model integration or measured savings.</p>
+<p>The diagram's model names are illustrative. Do not read its routing labels as a privacy or availability guarantee.</p>
 <hr/>
 <h2>🏗️ Architecture: How Hybrid AI Routing Works</h2>
 <pre><code>flowchart TD
@@ -46,7 +41,7 @@
     Classifier --&gt;|Score &gt;= 0.65: Complex Reasoning| Cloud[Cloud API: Gemini 1.5]
     Classifier --&gt;|Requires Tools / Function Calling| Cloud
     
-    Local --&gt;|Success: &lt;30ms, $0.00| Output[Response + Savings Metrics]
+    Local --&gt;|Success| Output[Response + Routing Metadata]
     Local -.-&gt;|Local OOM / Crash| CloudFallback[Escalate to Cloud Fallback]
     CloudFallback --&gt; Output
     
@@ -54,12 +49,12 @@
     Cloud -.-&gt;|Network Drop / Offline| LocalFallback[Recover via On-Device Fallback]
     LocalFallback --&gt; Output</code></pre>
 <hr/>
-<h2>⚡ Step 1: Sub-Millisecond Complexity Classification</h2>
-<p>Before any model runs, our router evaluates the prompt in sub-millisecond time. We measure three dimensions:</p>
+<h2>Step 1: Heuristic Complexity Classification</h2>
+<p>The classifier sketch considers the following signals. Its timing and classification accuracy have not been established here:</p>
 <ol>
 <li><strong>Estimated token length</strong> (normalized to the local model's context window).</li>
 <li><strong>Cognitive reasoning keywords</strong> (e.g. <code>architect</code>, <code>calculate proof</code>, <code>synthesize code</code>, <code>evaluate</code>).</li>
-<li><strong>PII and privacy markers</strong> (forcing sensitive data to stay local).</li>
+<li><strong>Privacy markers</strong> used to select a local route. Detecting every sensitive value and preserving that decision through fallback require separate controls.</li>
 </ol>
 <pre><code>export class ComplexityClassifier {
   public classify(request: InferenceRequest): RoutingDecision {
@@ -97,12 +92,12 @@
   }
 }</code></pre>
 <hr/>
-<h2>🛡️ Step 2: Bidirectional Circuit-Breaker Fallback</h2>
-<p>What happens if an on-device model runs out of memory on low-end hardware? Or what if a mobile device loses cellular signal mid-request?</p>
-<p><code>hybrid-ai-router</code> implements a <strong>bidirectional circuit breaker</strong>:</p>
+<h2>Step 2: Fallback and the Privacy Boundary</h2>
+<p>A fallback policy must decide whether trying another engine is permitted for the original request.</p>
+<p>The sample below is a simple local-to-cloud fallback, not a complete circuit breaker:</p>
 <ul>
-<li>If <code>on-device</code> inference throws an OOM or crashes, the router automatically catches the exception and escalates to the cloud endpoint.</li>
-<li>If <code>cloud</code> inference times out or encounters a network drop, the router seamlessly falls back to on-device inference, ensuring zero user-facing downtime.</li>
+<li>It catches a local-engine error and then calls the cloud engine. The second call can also fail.</li>
+<li>It does not check the request's privacy restriction before that cloud call. Therefore, the sketch must not be used as a guarantee that sensitive data stays local.</li>
 </ul>
 <pre><code>if (decision.targetTier === "on-device") {
   try {
@@ -117,21 +112,16 @@
   }
 }</code></pre>
 <hr/>
-<h2>💰 The Financial &amp; Performance Impact</h2>
-<p>In benchmark simulations of 100,000 conversational user queries:</p>
-<ul>
-<li><strong>72% of queries</strong> (greetings, formatting, summarizing, simple Q&amp;A) were handled on-device at <strong>$0.00 token cost</strong> with <strong>18ms–35ms latency</strong>.</li>
-<li><strong>28% of queries</strong> (complex code synthesis, multi-step planning, tool invocations) were escalated to Gemini 1.5.</li>
-<li><strong>Net Cost Reduction: 68.4%</strong> compared to sending 100% of traffic to cloud endpoints.</li>
-</ul>
+<h2>What Would Need to Be Measured</h2>
+<p>This article supplies no reproducible workload, hardware profile or billing dataset establishing cost savings or latency. Claims of a 70% reduction, sub-millisecond classification or a fixed local response time are not supported here. A meaningful comparison would report those inputs, quality checks, failure rates and both local and cloud costs.</p>
+<p>Comments and labels inside the preserved code sketches, including references to zero cost or zero leakage, describe intent rather than measured or guaranteed behaviour.</p>
 <hr/>
 <h2>🚀 Get Started</h2>
-<p>The complete project is open source and tested (11/11 tests passing):</p>
+<p>Review the independent project's source, adapters, tests and setup requirements before planning an integration. No current test total or production validation is asserted by this article.</p>
 <p>👉 <strong>GitHub</strong>: <a href="https://github.com/sidsri14/hybrid-ai-router" target="_blank" rel="noopener"><code>https://github.com/sidsri14/hybrid-ai-router</code></a></p>
-<p>👉 <strong>Commercial Starter Kit ($49)</strong>: <a href="https://buy.polar.sh/polar_cl_aChnKOBlSuTr0gEWTc1tZdxEFtcx3EuRWja9l4R1qiW" target="_blank" rel="noopener">Instant Checkout on Polar</a></p>
-<p>Built for the <strong>Google #BuildHybridAI 2026</strong> challenge on Devpost.</p>
+<p>👉 <strong>Packaged Prototype ($49)</strong>: <a href="https://buy.polar.sh/polar_cl_aChnKOBlSuTr0gEWTc1tZdxEFtcx3EuRWja9l4R1qiW" target="_blank" rel="noopener">Review the offering on Polar</a>. Source is public; confirm the package contents, included license and support scope before purchase. No additional license rights are promised here.</p>
       <hr />
-      <p><strong>Need production LLM or Solana infrastructure built cleanly?</strong> Hire on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork ($60/hr)</a> or get started immediately with our commercial kit:</p>
+      <p><strong>Have a scoped backend or developer-tooling task?</strong> Discuss the deliverable, acceptance checks and payment terms on <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork (asking rate: $60/hr)</a>, or review the prototype package below.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://buy.polar.sh/polar_cl_aChnKOBlSuTr0gEWTc1tZdxEFtcx3EuRWja9l4R1qiW" target="_blank" rel="noopener">Get Hybrid AI Router Kit ($49)</a>
         <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Engineering%20Inquiry">Contact: sidsri1502@gmail.com</a>
