@@ -185,6 +185,24 @@ h2 { font-size: 1.45rem; margin: 0 0 1rem; }
   color: #bae6fd;
 }
 
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.article-body th,
+.article-body td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+
+.article-body th { background: var(--surface-alt); }
+
+.article-body li { margin: 0.35rem 0; }
+
 footer {
   margin-top: 4rem;
   padding-top: 1.5rem;

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sample LLM Cost &amp; Latency Audit — StackIntercept — Siddharth Srivastava</title>
+  <meta name="description" content="A sample deliverable showing the format and method of the LLM Cost & Latency Audit service, applied to an open-source proxy with reproducible local benchmarks." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand"><a href="../index.html">← Siddharth Srivastava (@sidsri14)</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#services">Services ($60/hr)</a>
+        <a href="../index.html#articles">Articles</a>
+        <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork</a>
+      </nav>
+    </header>
+
+    <article class="article-body">
+      <h1>Sample LLM Cost &amp; Latency Audit</h1>
+      <p><em>A worked example of the audit deliverable. The audited subject is my own open-source project, StackIntercept, so every finding and number below is independently verifiable from public source. This is a format-and-method sample, not a claim about any client's production spend.</em></p>
+
+      <h2>What this document is</h2>
+      <p>The paid <strong>LLM Cost &amp; Latency Audit</strong> produces a short report: where calls and money go, which requests can safely avoid an upstream call, what to change first, and how to measure the result. This sample applies that exact structure to one repository so you can judge the depth and honesty of the work before engaging.</p>
+      <p>All measurements here come from a local script against a mock upstream. They are reproducible without API keys. No provider credentials, client data, or production traffic were used.</p>
+
+      <h2>1. Scope and subject</h2>
+      <ul>
+        <li><strong>Subject:</strong> <a href="https://github.com/sidsri14/stack-intercept" target="_blank" rel="noopener">StackIntercept</a> — a local OpenAI-compatible Rust proxy for repeated LLM calls.</li>
+        <li><strong>Question:</strong> Where does latency come from, and which requests can avoid an upstream call without changing answer correctness?</li>
+        <li><strong>Method:</strong> config review + local benchmark against a mock upstream with a fixed 50 ms delay.</li>
+        <li><strong>Environment:</strong> Windows, Rust 1.94.0, dev build, measured 2026-07-15.</li>
+      </ul>
+
+      <h2>2. Where calls and latency go</h2>
+      <p>The dominant cost driver in an LLM gateway is repeated identical or near-identical calls that still reach the provider. The local benchmark isolates each path:</p>
+      <table>
+        <thead>
+          <tr><th>Path</th><th>Median latency</th><th>Relative to cold miss</th><th>Upstream call</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cold miss, no cache</td><td>53.6 ms</td><td>1.00x</td><td>Yes</td></tr>
+          <tr><td>Exact cache hit</td><td>2.3 ms</td><td>0.04x</td><td>No</td></tr>
+          <tr><td>Streaming exact cache hit</td><td>1.8 ms</td><td>0.03x</td><td>No</td></tr>
+          <tr><td>Semantic cache hit</td><td>50.1 ms</td><td>0.93x</td><td>No</td></tr>
+          <tr><td>Routed fallback request</td><td>53.6 ms</td><td>1.00x</td><td>Yes (fallback provider)</td></tr>
+        </tbody>
+      </table>
+      <p>Read the last column first. An exact cache hit removes the upstream call entirely — that is the mechanism that reduces provider spend, not the raw latency number. The latency figures are meaningful as a measure of the local overhead each path adds.</p>
+
+      <h2>3. What is safe to cache</h2>
+      <p>Blind caching changes answers. The audit checks that the proxy excludes non-deterministic or stateful requests:</p>
+      <ul>
+        <li>Requests with <code>temperature &gt; 0</code> are not cached.</li>
+        <li>Tool / function-calling and structured-output requests are not cached.</li>
+        <li><code>cache_control: no_store</code> is respected.</li>
+        <li>Non-2xx upstream responses are never cached.</li>
+        <li>Cache keys include provider and routing namespace, so a routed answer cannot be replayed as a passthrough answer.</li>
+      </ul>
+      <p>These rules are documented in <a href="https://github.com/sidsri14/stack-intercept/blob/master/docs/design.md" target="_blank" rel="noopener"><code>docs/design.md</code></a>. A real audit verifies them against your traffic, not just against docs.</p>
+
+      <h2>4. Findings and priorities</h2>
+      <p><strong>F1 — Exact caching is on by default.</strong> Default config is <code>CacheMode::Exact</code> with a 3600 s TTL and 20,000 entries. For workloads with repeated deterministic prompts, this is the first saving to measure. <em>Priority: measure hit rate before changing anything.</em></p>
+      <p><strong>F2 — Semantic caching is opt-in and carries most of its own overhead.</strong> A semantic hit measured 50.1 ms versus 2.3 ms for exact. It avoids the upstream call but adds local embedding work. Enable it only where phrasing varies but surrounding context is stable; the implementation scopes similarity to a context bucket rather than the whole store. <em>Priority: second, after exact-cache hit rate is known.</em></p>
+      <p><strong>F3 — Model routing is off by default</strong> (<code>allow_model_rewrite: false</code>) and is blocked for tools, structured output, multimodal, non-deterministic, and security/financial-style prompts. Cost savings from routing are real only where the cheaper model is correct for the task. <em>Priority: evaluate per workload, never globally.</em></p>
+      <p><strong>F4 — Reactive failover is on</strong> for 429/500/502/503/504 before any body bytes are sent. This protects availability; it is not a spend control. <em>Priority: verify it does not mask an upstream quota problem by silently moving cost to a fallback provider.</em></p>
+      <p><strong>F5 — Stream completion must gate cache insertion.</strong> An HTTP 200 on an SSE stream is not proof of a complete response. Caching a truncated stream replays a partial answer. This proxy tracks stream completion separately before inserting into the cache. <em>Priority: correctness check in any proxy audit.</em></p>
+
+      <h2>5. How to measure the result</h2>
+      <p>Every upstream call avoided is a call not billed. Track the transparent response headers the proxy emits (<code>x-stack-intercept: hit|miss</code> and the routing headers) and compare:</p>
+      <pre><code>hit rate = cache hits / total eligible requests
+upstream calls avoided = cache hits
+cost change = avoided calls x your provider's per-call price
+latency change = compare hit-path vs miss-path medians</code></pre>
+      <p>The report gives you this measurement harness so savings are attributed to a specific change, not guessed.</p>
+
+      <h2>6. Limits, stated plainly</h2>
+      <ul>
+        <li>These numbers come from a mock upstream on one machine. They are not production latency or cost figures.</li>
+        <li>Savings depend entirely on your real request mix. A workload with no repeated deterministic calls saves little from exact caching.</li>
+        <li>This project is not a full gateway: it has no built-in rate limiting, spend caps, health-based load balancing, or circuit breaker.</li>
+        <li>I do not promise a fixed percentage reduction. I measure your traffic and report what the changes would actually do.</li>
+      </ul>
+
+      <h2>7. Deliverable format</h2>
+      <p>A paid audit returns: (1) spend and call-driver analysis, (2) a safe-to-cache map for your request types, (3) prioritized findings like F1–F5 above, (4) a measurement harness, (5) a 30-minute walkthrough. If you hire me to implement, the audit fee is credited toward the project.</p>
+      <p><strong>See the service and pricing:</strong> <a href="../index.html#services">Contract Engineering Services</a>. <strong>Source and reproduction steps:</strong> <a href="https://github.com/sidsri14/stack-intercept" target="_blank" rel="noopener">github.com/sidsri14/stack-intercept</a> — run <code>python benchmark.py</code> after <code>cargo build</code>.</p>
+    </article>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork Profile</a></span>
+    </footer>
+  </div>
+</body>
+</html>
