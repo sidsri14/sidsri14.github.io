@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A 56-second AI-narrated overview of StackIntercept, an independent Rust proxy project, with source and explicit limits." />
+  <title>StackIntercept Project Walkthrough - Siddharth Srivastava</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <main class="container">
+    <nav class="topbar" aria-label="Page navigation">
+      <a class="brand" href="../">Siddharth Srivastava</a>
+      <a href="https://github.com/sidsri14/stack-intercept" target="_blank" rel="noopener">Public source</a>
+    </nav>
+    <section class="hero">
+      <span class="pill">Independent, AI-assisted project</span>
+      <h1>StackIntercept: a 56-second walkthrough</h1>
+      <p>An illustrated overview of the project's goal and design. Narration uses a generic synthetic voice; it is not a recording of me speaking or a live runtime demonstration.</p>
+      <video controls preload="metadata" playsinline width="1280" height="720" poster="../media/stackintercept-walkthrough-poster.png" style="display:block;width:100%;height:auto;border-radius:12px;background:#152536;" aria-label="AI-narrated StackIntercept project walkthrough">
+        <source src="../media/stackintercept-walkthrough.mp4" type="video/mp4" />
+        <track kind="captions" src="../media/stackintercept-walkthrough.vtt" srclang="en" label="English transcript" default />
+        <p><a href="../media/stackintercept-walkthrough.mp4">Open the MP4 video</a>.</p>
+      </video>
+      <p style="margin-top:1rem;font-size:0.95rem;">56.45 seconds. <a href="../media/stackintercept-walkthrough.mp4">Open the MP4</a> or read the transcript below.</p>
+    </section>
+    <section aria-labelledby="transcript">
+      <h2 id="transcript">Transcript</h2>
+      <article class="article-body">
+        <p>This AI-narrated walkthrough presents StackIntercept, Siddharth Srivastava's independent Rust project. Its goal is to explore repeated requests and provider failures behind an OpenAI-compatible API.</p>
+        <p>The design puts a proxy between the application and its provider. In exact mode, normalized request payload, provider and tenant form the cache key. Eligible repeats can be replayed from memory.</p>
+        <p>For primary-provider rate limits or server errors, a configured fallback receives one retry. Cache controls, routing headers and Prometheus metrics make the intended behavior inspectable.</p>
+        <p>The repository includes source and provider-free mock tests. This is AI-assisted independent work, not paid client or production experience. These examples do not establish customer savings, live-provider reliability or hard spending caps.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

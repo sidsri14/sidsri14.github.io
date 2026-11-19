@@ -1,0 +1,13 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:13.191
+This AI-narrated walkthrough presents StackIntercept, Siddharth Srivastava's independent Rust project. Its goal is to explore repeated requests and provider failures behind an OpenAI-compatible API.
+
+00:00:13.191 --> 00:00:26.798
+The design puts a proxy between the application and its provider. In exact mode, normalized request payload, provider and tenant form the cache key. Eligible repeats can be replayed from memory.
+
+00:00:26.798 --> 00:00:39.465
+For primary-provider rate limits or server errors, a configured fallback receives one retry. Cache controls, routing headers and Prometheus metrics make the intended behavior inspectable.
+
+00:00:39.465 --> 00:00:56.476
+The repository includes source and provider-free mock tests. This is AI-assisted independent work, not paid client or production experience. These examples do not establish customer savings, live-provider reliability or hard spending caps.
