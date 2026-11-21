@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sample Manual QA &amp; Usability Report — Siddharth Srivastava</title>
+  <meta name="description" content="A worked format-and-method sample for the Manual QA & Usability Audit service: severity rubric, anonymized public-site observations, and a copyable bug-report template." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand"><a href="../index.html">← Siddharth Srivastava (@sidsri14)</a></div>
+      <nav class="nav-links">
+        <a href="../index.html#services">Paid Services</a>
+        <a href="../index.html#articles">Articles</a>
+        <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork</a>
+      </nav>
+    </header>
+
+    <article class="article-body">
+      <h1>Sample Manual QA &amp; Usability Report</h1>
+      <p><em>A format-and-method sample for the paid Manual QA &amp; Usability Audit. The observations below are real things I saw during a two-minute first-pass on a public website, but the site is deliberately not named: this is not client work, I have no permission to publish a named critique, and no production impact is claimed. It exists so you can judge the structure and honesty of the report before engaging.</em></p>
+
+      <h2>What this document is</h2>
+      <p>The paid service delivers a short, structured report for one web app or job board: what I tested, what broke or felt wrong, how to reproduce it, severity, and a prioritized fix list. This sample applies that exact structure to a public site I opened in Chromium on 2026-11-21. The site is anonymized as <strong>“Subject Site”</strong>.</p>
+      <p>No screenshot, video, Safari/Firefox run, physical mobile-device test, analytics access, or client data is shown here. Those are only included in a paid engagement when access and permission exist.</p>
+
+      <h2>1. Scope and limits, stated plainly</h2>
+      <ul>
+        <li><strong>Subject:</strong> one public job-board homepage, anonymized as Subject Site.</li>
+        <li><strong>Question:</strong> what does a first-time job seeker notice in the first two minutes, and which core journeys look inaccurate or confusing?</li>
+        <li><strong>Environment:</strong> Chromium desktop in BrowserOS, 2026-11-21. Responsive emulation is available in a paid engagement; it is not real-device testing.</li>
+        <li><strong>Checks:</strong> first-impression pass, browse/search/filter controls, listing-card data consistency, external links, and layout/text encoding.</li>
+        <li><strong>Not claimed:</strong> Safari, Firefox, physical iPhone/Android, screen recordings, formal UX-audit credentials, production metrics, or client results.</li>
+      </ul>
+
+      <h2>2. Severity rubric used in the report</h2>
+      <table>
+        <thead>
+          <tr><th>Severity</th><th>Meaning</th><th>Example in this method</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Critical</td><td>Blocks a core task for most users, with no reasonable workaround.</td><td>Search returns an error for every query.</td></tr>
+          <tr><td>Major</td><td>Misleads a user on important data or blocks a meaningful subset of a core task.</td><td>Location/region label contradicts itself on a listing.</td></tr>
+          <tr><td>Minor</td><td>Confusing or untidy, but the user can still complete the task.</td><td>Duplicated count text on a card.</td></tr>
+          <tr><td>Cosmetic</td><td>Visual polish only; no task impact.</td><td>Inconsistent spacing or a garbled apostrophe.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>3. Worked findings</h2>
+
+      <p><strong>F1 — Duplicated hidden-count presentation on job cards.</strong> <em>Severity: Minor.</em></p>
+      <ul>
+        <li><strong>Where:</strong> multiple listing cards on the Subject Site results grid.</li>
+        <li><strong>Steps:</strong> open the homepage, let the country selector resolve, and scan the tag rows on several cards.</li>
+        <li><strong>Expected:</strong> one concise indicator of extra tags, for example “+2” or “and 2 more”, not both.</li>
+        <li><strong>Actual:</strong> cards showed a numeric chip such as “+2”, “+3”, “+4” or “+6” immediately followed by text such as “and 2 more”, “and 3 more”, etc.</li>
+        <li><strong>Impact:</strong> redundant information makes cards harder to scan; it does not block applying for a job.</li>
+        <li><strong>Recommendation:</strong> keep one form of the count. If the chip is interactive, drop the trailing text; if the text is needed for accessibility, make the chip’s accessible name carry it once.</li>
+      </ul>
+
+      <p><strong>F2 — Region/location label contradicts itself.</strong> <em>Severity: Major.</em></p>
+      <ul>
+        <li><strong>Where:</strong> one duplicated listing for the same role on the Subject Site.</li>
+        <li><strong>Steps:</strong> browse the results list and compare cards with the same job title under different location labels.</li>
+        <li><strong>Expected:</strong> the named region and the country/place agree, or the card explains why a country is grouped under that region.</li>
+        <li><strong>Actual:</strong> the same role appeared once under an Asia-Pacific location and again under a European country still labelled with the Asia-Pacific region. The helper text repeated the mismatch.</li>
+        <li><strong>Impact:</strong> a job seeker filtering by region may see a listing that does not belong to that region, reducing trust in the board’s core data.</li>
+        <li><strong>Recommendation:</strong> validate region assignment at import time; when a posting names a region but lists a mismatched country, either correct it or surface an explicit “check posting” state rather than presenting both as fact.</li>
+      </ul>
+
+      <p><strong>F3 — Garbled apostrophe encoding in listing summaries.</strong> <em>Severity: Cosmetic.</em></p>
+      <ul>
+        <li><strong>Where:</strong> job-summary text on at least one card.</li>
+        <li><strong>Expected:</strong> a normal apostrophe in plain English text.</li>
+        <li><strong>Actual:</strong> the summary contained mojibake-like characters where an apostrophe should be.</li>
+        <li><strong>Impact:</strong> minor readability and trust issue; no task blocking.</li>
+        <li><strong>Recommendation:</strong> normalize source text to UTF-8 at ingestion and add an encoding regression check.</li>
+      </ul>
+
+      <h2>4. Copyable bug-report template</h2>
+      <pre><code>ID: F1
+Title: Duplicated hidden-count presentation on job cards
+Severity: Minor
+Environment: Chromium desktop / page URL / date
+Preconditions: country selector resolved; results grid visible
+Steps:
+  1. Open the page.
+  2. Scan the tag row on a card with extra tags.
+Expected: one count indicator, not two.
+Actual: "+N" chip followed by "and N more".
+Evidence: screenshot or DOM excerpt (included only when permitted)
+Impact: harder scanning; no core-task block.
+Recommendation: keep one count representation.
+Owner/status: unassigned / open</code></pre>
+
+      <h2>5. Deliverable format in a paid engagement</h2>
+      <p>A paid audit returns: (1) the agreed scope and environment, (2) the severity rubric, (3) findings with steps, expected/actual, evidence where permitted, impact and recommendation, (4) a prioritized fix list, and (5) one revision after delivery. I do not claim real-device or multi-browser coverage unless that access is provided, and I do not claim a formal UX-audit portfolio I do not have.</p>
+      <p><strong>Service and pricing:</strong> <a href="https://contra.com/s/YAAmqgeg-manual-qa-and-usability-audit-web-app-job-board" target="_blank" rel="noopener">Manual QA &amp; Usability Audit on Contra — $150 / one surface</a>. <strong>Back to services:</strong> <a href="../index.html#services">Contract Engineering Services</a>.</p>
+    </article>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="https://www.upwork.com/freelancers/~01f93f1a56b9ef1b8d" target="_blank" rel="noopener">Upwork Profile</a></span>
+    </footer>
+  </div>
+</body>
+</html>
