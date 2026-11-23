@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hybrid AI Router — Interactive Web Playground</title>
+  <meta name="description" content="Autonomous, resilient inference router that blends on-device SLMs with Google Gemini. Sub-millisecond complexity scoring, zero-cloud PII guardrails, and bidirectional fallback." />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 26, 43, 0.85);
+      --border: #23304a;
+      --border-glow: #38bdf8;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-local: #10b981;
+      --accent-cloud: #8b5cf6;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #38bdf8;
+    }
+
+    .hero-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-banner h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .hero-banner p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 850px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .presets-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #070b13;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .run-btn {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+      margin-left: auto;
+    }
+
+    .run-btn:hover {
+      background: #0369a1;
+    }
+
+    /* Decision Panel */
+    .decision-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .decision-badge.local {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-local);
+      border: 1px solid var(--accent-local);
+    }
+
+    .decision-badge.cloud {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-cloud);
+      border: 1px solid var(--accent-cloud);
+    }
+
+    .meter-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .meter-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .meter-bar {
+      height: 10px;
+      background: #070b13;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease, background-color 0.4s ease;
+    }
+
+    .log-box {
+      background: #070b13;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #94a3b8;
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .log-entry {
+      line-height: 1.4;
+    }
+
+    .log-entry.success { color: #34d399; }
+    .log-entry.info { color: #38bdf8; }
+    .log-entry.warning { color: #fbbf24; }
+    .log-entry.danger { color: #f87171; }
+
+    /* Telemetry HUD */
+    .telemetry-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 700px) {
+      .telemetry-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand-title">
+        <span>⚡ Hybrid AI Router</span>
+        <span class="brand-badge">#BuildHybridAI 2026</span>
+      </div>
+      <nav class="nav-links">
+        <a href="https://github.com/sidsri14/hybrid-ai-router" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="https://firebasehybridaihackathon.devpost.com/" target="_blank" rel="noopener">Devpost Challenge</a>
+        <a href="../index.html">Main Portfolio</a>
+      </nav>
+    </header>
+
+    <section class="hero-banner">
+      <h2>Autonomous On-Device First Inference &amp; Cloud Escalation</h2>
+      <p>
+        Evaluates input queries in sub-millisecond time. Routine, high-frequency, and privacy-sensitive queries execute locally with <strong>&lt;30ms latency and $0.00 token cost</strong>. Complex multi-step reasoning escalates seamlessly to Google Gemini, with automatic bidirectional fallback.
+      </p>
+    </section>
+
+    <!-- Telemetry HUD -->
+    <div class="telemetry-row">
+      <div class="stat-card">
+        <div class="stat-value" id="hud-total">0</div>
+        <div class="stat-label">Total Inferences</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="hud-local-pct" style="color: var(--accent-local);">0%</div>
+        <div class="stat-label">On-Device Ratio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="hud-latency">0 ms</div>
+        <div class="stat-label">Avg. Latency</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="hud-savings" style="color: #34d399;">$0.000</div>
+        <div class="stat-label">Est. Cost Saved</div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Input Panel -->
+      <div class="card">
+        <div class="card-title">
+          <span>1. Query Input</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);" id="char-count">0 chars</span>
+        </div>
+
+        <div class="presets-row">
+          <button class="preset-btn" onclick="applyPreset('greeting')">💬 Greeting / Format</button>
+          <button class="preset-btn" onclick="applyPreset('pii')">🛡️ PII Guardrail</button>
+          <button class="preset-btn" onclick="applyPreset('reasoning')">🧠 Complex Reasoning</button>
+          <button class="preset-btn" onclick="applyPreset('tools')">🔧 Tool Calling</button>
+        </div>
+
+        <textarea id="prompt-input" placeholder="Type or paste any query to evaluate routing..."></textarea>
+
+        <div class="controls-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-tools" /> Requires Tool Synthesis
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-offline" /> Offline Mode (Airplane)
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-fail-device" /> Simulate Local Crash (Fallback)
+          </label>
+          <button class="run-btn" onclick="routeQuery()">
+            <span>Route Query</span> ➔
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Decision & Analysis Panel -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. Routing Engine Output</span>
+          <span style="font-size: 0.8rem; font-family: var(--font-mono);" id="route-latency">0.42 ms classification</span>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem;">Assigned Execution Target</div>
+            <div class="decision-badge local" id="decision-badge">ON-DEVICE (Gemma 2B)</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem;">Execution Cost</div>
+            <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700;" id="execution-cost">$0.000000</div>
+          </div>
+        </div>
+
+        <div class="meter-container">
+          <div class="meter-header">
+            <span>Semantic Complexity Score</span>
+            <span id="score-text">0.20 / 1.00</span>
+          </div>
+          <div class="meter-bar">
+            <div class="meter-fill" id="score-bar" style="width: 20%; background-color: var(--accent-local);"></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">Decision Rationale</div>
+          <div style="font-size: 0.9rem; color: #cbd5e1; background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border);" id="decision-reason">
+            Routine query suitable for on-device inference (complexity 0.20 &lt; 0.65 threshold).
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">Inference Telemetry Log</div>
+          <div class="log-box" id="log-box">
+            <div class="log-entry info">[INIT] Hybrid AI Router v1.0.0 initialized with Gemma 2B &amp; Gemini 1.5 Flash.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Built for the <strong>#BuildHybridAI 2026</strong> Hackathon on Devpost. Open-source under MIT License.</p>
+      <p style="margin-top: 0.25rem;">Author: Siddharth Srivastava (<a href="https://github.com/sidsri14" style="color: #38bdf8;">@sidsri14</a>)</p>
+    </footer>
+  </div>
+
+  <script>
+    // Exact ComplexityClassifier implementation from TypeScript source
+    const COMPLEX_PATTERNS = [
+      /\b(solve|calculate|proof|theorem|derive|deduce)\b/i,
+      /\b(architect|refactor|design pattern|optimize algorithm|algorithm)\b/i,
+      /\b(critique|analyze|compare and contrast|evaluate)\b/i,
+      /\b(synthesize|multi-step|step-by-step|reasoning|chain-of-thought)\b/i,
+      /\b(consensus|distributed|fault tolerance|concurrency|database)\b/i,
+      /\b(code|function|class|sql|regex|typescript|python)\s*\{/i
+    ];
+
+    const PII_PATTERNS = [
+      /\b\d{3}-\d{2}-\d{4}\b/, // SSN
+      /\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b/, // Credit Card
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/, // Email
+      /\b(password|secret_key|api_key|bearer token|auth)\b/i
+    ];
+
+    const CONFIG = {
+      complexityThreshold: 0.65,
+      maxLocalTokenLength: 1024,
+      cloudCostPer1kTokens: 0.00035 // Gemini 1.5 Flash rate
+    };
+
+    // Telemetry state
+    let stats = {
+      total: 0,
+      local: 0,
+      cloud: 0,
+      totalLatency: 0,
+      totalSavedUsd: 0
+    };
+
+    const presets = {
+      greeting: "Hello! Can you help format this list of bullet points into clean title case?",
+      pii: "Please check user profile for Siddharth (email: sidsri1502@gmail.com, card: 4111-2222-3333-4444) and verify account status.",
+      reasoning: "Architect a fault-tolerant distributed consensus protocol for an autonomous database and derive the mathematical proof for Byzantine agreement with step-by-step reasoning.",
+      tools: "Look up current weather in Lucknow and query my calendar events for tomorrow."
+    };
+
+    function applyPreset(key) {
+      document.getElementById('prompt-input').value = presets[key];
+      document.getElementById('toggle-tools').checked = (key === 'tools');
+      updateCharCount();
+      routeQuery();
+    }
+
+    function updateCharCount() {
+      const len = document.getElementById('prompt-input').value.length;
+      document.getElementById('char-count').innerText = `${len} chars (~${Math.ceil(len / 4)} tokens)`;
+    }
+
+    document.getElementById('prompt-input').addEventListener('input', updateCharCount);
+
+    function computeComplexityScore(text, tokenEstimate) {
+      let score = 0.2;
+      const lengthFactor = Math.min(1.0, tokenEstimate / CONFIG.maxLocalTokenLength);
+      score += lengthFactor * 0.3;
+
+      let patternMatches = 0;
+      for (const p of COMPLEX_PATTERNS) {
+        if (p.test(text)) patternMatches++;
+      }
+      score += Math.min(0.6, patternMatches * 0.2);
+      return Math.min(1.0, Math.max(0.0, score));
+    }
+
+    function hasPII(text) {
+      return PII_PATTERNS.some(p => p.test(text));
+    }
+
+    function addLog(text, type = 'info') {
+      const box = document.getElementById('log-box');
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.innerText = `[${time}] ${text}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function routeQuery() {
+      const prompt = document.getElementById('prompt-input').value.trim();
+      if (!prompt) return;
+
+      const requiresTools = document.getElementById('toggle-tools').checked;
+      const isOffline = document.getElementById('toggle-offline').checked;
+      const simulateLocalFail = document.getElementById('toggle-fail-device').checked;
+
+      const t0 = performance.now();
+      const tokens = Math.max(1, Math.ceil(prompt.length / 4));
+
+      let targetTier = "on-device";
+      let reason = "";
+      let score = 0.0;
+      let isFallback = false;
+
+      // 1. Offline Mode check
+      if (isOffline) {
+        targetTier = "on-device";
+        reason = "Offline mode active: forced local on-device execution";
+        score = 0.0;
+      }
+      // 2. PII / Privacy check
+      else if (hasPII(prompt)) {
+        targetTier = "on-device";
+        reason = "Privacy Guardrail: PII detected (email/SSN/card/secret). Forced local zero-cloud execution.";
+        score = 0.0;
+      }
+      // 3. Tool Synthesis requirement
+      else if (requiresTools) {
+        targetTier = "cloud";
+        reason = "Tool calling requires frontier cloud model capabilities.";
+        score = 0.95;
+      }
+      // 4. Token Length limit
+      else if (tokens > CONFIG.maxLocalTokenLength) {
+        targetTier = "cloud";
+        reason = `Token length (${tokens}) exceeds local model threshold (${CONFIG.maxLocalTokenLength}).`;
+        score = 0.90;
+      }
+      // 5. Semantic Complexity
+      else {
+        score = computeComplexityScore(prompt, tokens);
+        if (score >= CONFIG.complexityThreshold) {
+          targetTier = "cloud";
+          reason = `High cognitive complexity score (${score.toFixed(2)} >= ${CONFIG.complexityThreshold}). Escalating to Google Gemini.`;
+        } else {
+          targetTier = "on-device";
+          reason = `Routine query suitable for on-device inference (complexity ${score.toFixed(2)} < ${CONFIG.complexityThreshold}).`;
+        }
+      }
+
+      // Check simulated local crash fallback
+      if (targetTier === "on-device" && simulateLocalFail && !isOffline) {
+        targetTier = "cloud";
+        reason = "Circuit Breaker: On-device engine threw OOM. Automatic fallback escalation to Google Gemini succeeded!";
+        isFallback = true;
+      }
+
+      const t1 = performance.now();
+      const classificationLatency = (t1 - t0).toFixed(2);
+
+      // Simulated execution telemetry
+      const executionLatency = targetTier === "on-device" ? Math.floor(18 + Math.random() * 15) : Math.floor(380 + Math.random() * 150);
+      const executionCost = targetTier === "on-device" ? 0.000000 : (tokens / 1000) * CONFIG.cloudCostPer1kTokens;
+      const costSaved = targetTier === "on-device" ? (tokens / 1000) * CONFIG.cloudCostPer1kTokens : 0.000000;
+
+      // Update UI
+      document.getElementById('route-latency').innerText = `${classificationLatency} ms classification`;
+      const badge = document.getElementById('decision-badge');
+      if (targetTier === "on-device") {
+        badge.className = "decision-badge local";
+        badge.innerText = "ON-DEVICE (Gemma 2B / WebGPU)";
+        document.getElementById('score-bar').style.backgroundColor = "var(--accent-local)";
+      } else {
+        badge.className = "decision-badge cloud";
+        badge.innerText = isFallback ? "CLOUD FALLBACK (Gemini 1.5)" : "CLOUD ESCALATION (Gemini 1.5)";
+        document.getElementById('score-bar').style.backgroundColor = isFallback ? "var(--accent-warning)" : "var(--accent-cloud)";
+      }
+
+      document.getElementById('execution-cost').innerText = `$${executionCost.toFixed(6)}`;
+      document.getElementById('score-text').innerText = `${score.toFixed(2)} / 1.00`;
+      document.getElementById('score-bar').style.width = `${Math.round(score * 100)}%`;
+      document.getElementById('decision-reason').innerText = reason;
+
+      // Update Log
+      if (isFallback) {
+        addLog(`[CIRCUIT-BREAKER] Local failure caught -> Fallback to Gemini 1.5 (${executionLatency}ms)`, 'warning');
+      } else if (targetTier === "on-device") {
+        addLog(`[ROUTED LOCAL] Gemma 2B executed in ${executionLatency}ms ($0.00 cost)`, 'success');
+      } else {
+        addLog(`[ROUTED CLOUD] Gemini 1.5 Flash executed in ${executionLatency}ms ($${executionCost.toFixed(6)})`, 'info');
+      }
+
+      // Update HUD
+      stats.total++;
+      if (targetTier === "on-device") stats.local++; else stats.cloud++;
+      stats.totalLatency += executionLatency;
+      stats.totalSavedUsd += costSaved;
+
+      document.getElementById('hud-total').innerText = stats.total;
+      document.getElementById('hud-local-pct').innerText = `${Math.round((stats.local / stats.total) * 100)}%`;
+      document.getElementById('hud-latency').innerText = `${Math.round(stats.totalLatency / stats.total)} ms`;
+      document.getElementById('hud-savings').innerText = `$${stats.totalSavedUsd.toFixed(4)}`;
+    }
+
+    // Run default preset on load
+    applyPreset('greeting');
+  </script>
+</body>
+</html>
