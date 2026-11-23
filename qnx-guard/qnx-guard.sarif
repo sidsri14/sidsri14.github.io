@@ -1,0 +1,222 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "qnx-guard",
+          "version": "0.1.0",
+          "informationUri": "https://github.com/sidsri14/qnx-guard",
+          "rules": [
+            {
+              "id": "QNX201",
+              "name": "Missing-QCC-Security-Hardening",
+              "shortDescription": {
+                "text": "qcc/q++ invocation detected without stack protector (-fstack-protector-strong) hardening."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "QNX202",
+              "name": "Ambiguous-Target-Architecture",
+              "shortDescription": {
+                "text": "qcc invocation lacks explicit target architecture variant flag."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "QNX002",
+              "name": "System-Pulse-Code-Collision",
+              "shortDescription": {
+                "text": "Negative pulse code '-1' conflicts with QNX kernel-reserved pulse codes."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "QNX003",
+              "name": "Channel-Priority-Inversion-Risk",
+              "shortDescription": {
+                "text": "ChannelCreate() called with flags=0. Channel lacks priority inheritance or fixed-priority scheduling."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "QNX104",
+              "name": "Insecure-Library-Search-Path",
+              "shortDescription": {
+                "text": "LD_LIBRARY_PATH contains relative path or writable directory (/tmp, /var)."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "QNX105",
+              "name": "Hardcoded-Credentials-In-Buildfile",
+              "shortDescription": {
+                "text": "Hardcoded sensitive credential identified in QNX buildfile."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "QNX101",
+              "name": "World-Writable-IFS-Permissions",
+              "shortDescription": {
+                "text": "Insecure file permission mask '0777' allows world-write access in QNX image."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "QNX201",
+          "level": "warning",
+          "message": {
+            "text": "qcc/q++ invocation detected without stack protector (-fstack-protector-strong) hardening. Remediation: Pass -fstack-protector-strong and -D_FORTIFY_SOURCE=2 to compiler flags."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Makefile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX202",
+          "level": "warning",
+          "message": {
+            "text": "qcc invocation lacks explicit target architecture variant flag. Remediation: Specify target architecture with -Vgcc_ntox86_64 (x86_64) or -Vgcc_ntoaarch64le (ARM64)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Makefile"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX002",
+          "level": "error",
+          "message": {
+            "text": "Negative pulse code '-1' conflicts with QNX kernel-reserved pulse codes. Remediation: Use positive pulse codes in the range _PULSE_CODE_MINAVAIL (0) to _PULSE_CODE_MAXAVAIL (127)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vulnerable_service.c"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX003",
+          "level": "warning",
+          "message": {
+            "text": "ChannelCreate() called with flags=0. Channel lacks priority inheritance or fixed-priority scheduling. Remediation: Configure _NTO_CHF_FIXED_PRIORITY or priority inheritance flags on real-time service channels."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vulnerable_service.c"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX104",
+          "level": "warning",
+          "message": {
+            "text": "LD_LIBRARY_PATH contains relative path or writable directory (/tmp, /var). Remediation: Restrict library search path exclusively to /proc/boot:/lib:/usr/lib."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vulnerable_system.bld"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX105",
+          "level": "error",
+          "message": {
+            "text": "Hardcoded sensitive credential identified in QNX buildfile. Remediation: Inject credentials at runtime via encrypted filesystem or secure configuration daemon."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vulnerable_system.bld"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNX101",
+          "level": "error",
+          "message": {
+            "text": "Insecure file permission mask '0777' allows world-write access in QNX image. Remediation: Change permission attribute to [perms=0755] for executables or [perms=0644] for read-only data."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "vulnerable_system.bld"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud9 Fearless Draft & Scouting Engine | Sky's The Limit 2026</title>
+  <style>
+    :root {
+      --c9-cyan: #00AEEF;
+      --c9-cyan-glow: rgba(0, 174, 239, 0.35);
+      --c9-navy: #08111d;
+      --bg-dark: #0b0f17;
+      --card-bg: #141c2b;
+      --border-color: #223048;
+      --text-main: #f0f4f8;
+      --text-muted: #8b9bb4;
+      --blue-side: #2b70f7;
+      --red-side: #e53e3e;
+      --warning-gold: #f6ad55;
+      --danger-red: #fc8181;
+      --success-green: #48bb78;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(90deg, #07101c 0%, #0d1a2d 100%);
+      border-bottom: 2px solid var(--c9-cyan);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 174, 239, 0.15);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .c9-logo-badge {
+      background-color: var(--c9-cyan);
+      color: #000;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand span {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+
+    .series-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    select, input, button {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--c9-cyan);
+      box-shadow: 0 0 8px var(--c9-cyan-glow);
+    }
+
+    button.btn-primary {
+      background-color: var(--c9-cyan);
+      color: #000;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button.btn-primary:hover {
+      background-color: #38bdf8;
+      box-shadow: 0 0 12px var(--c9-cyan);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      gap: 16px;
+      padding: 16px 24px;
+      flex: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .side-column {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .side-column.blue-side { border-top: 4px solid var(--blue-side); }
+    .side-column.red-side { border-top: 4px solid var(--red-side); }
+
+    .side-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 700;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .bans-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ban-slot {
+      flex: 1;
+      height: 38px;
+      background: #0d1420;
+      border: 1px dashed var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 2px 4px;
+    }
+
+    .ban-slot.filled {
+      border: 1px solid #718096;
+      background: #1a202c;
+      color: #cbd5e0;
+      text-decoration: line-through;
+    }
+
+    .picks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .pick-slot {
+      height: 52px;
+      background: #0d1420;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .pick-slot.filled {
+      border-color: #3b82f6;
+      background: linear-gradient(90deg, #101c30 0%, #15223a 100%);
+    }
+
+    .red-side .pick-slot.filled {
+      border-color: #ef4444;
+      background: linear-gradient(90deg, #2b1115 0%, #3a151b 100%);
+    }
+
+    .pick-info-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pick-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .pick-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .center-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .phase-banner {
+      background: linear-gradient(90deg, #101a2b 0%, #17243c 100%);
+      border: 1px solid var(--c9-cyan);
+      border-radius: 8px;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .turn-label {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--c9-cyan);
+    }
+
+    .turn-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .recommendation-panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rec-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .rec-card {
+      background: #0d1420;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rec-card:hover {
+      border-color: var(--c9-cyan);
+      transform: translateY(-2px);
+    }
+
+    .rec-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .rec-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .rec-score {
+      font-size: 0.75rem;
+      background: rgba(0, 174, 239, 0.2);
+      color: var(--c9-cyan);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .rec-reason {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .rec-card.choke {
+      border-color: var(--warning-gold);
+      background: #23190e;
+    }
+
+    .rec-card.choke .rec-score {
+      background: rgba(246, 173, 85, 0.25);
+      color: var(--warning-gold);
+    }
+
+    .champion-selector {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      flex: 1;
+    }
+
+    .champs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .champ-btn {
+      background: #0d1420;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.15s;
+    }
+
+    .champ-btn:hover:not(.locked) {
+      border-color: var(--c9-cyan);
+      background: #142032;
+    }
+
+    .champ-btn.locked {
+      background: #12151b;
+      color: #556277;
+      border-color: #1f2736;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .champ-btn.locked::after {
+      content: "LOCKED";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(229, 62, 62, 0.15);
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: var(--danger-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.5px;
+    }
+
+    .bottom-bar {
+      background-color: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-bar { grid-template-columns: 1fr; }
+    }
+
+    .lockout-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .lockout-pill {
+      background: #251216;
+      border: 1px solid #742a2a;
+      color: #feb2b2;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="c9-logo-badge">C9</div>
+      <div>
+        <h1>Fearless Draft & Macro Scouting Engine</h1>
+        <span>Sky's The Limit 2026 • Official GRID LoL Analytics</span>
+      </div>
+    </div>
+    <div class="series-controls">
+      <select id="team-select"></select>
+      <select id="mode-select">
+        <option value="hard">Hard Fearless (Mutual Lockout)</option>
+        <option value="soft">Soft Fearless (Team Lockout)</option>
+      </select>
+      <select id="format-select">
+        <option value="3">Best of 3 (Bo3)</option>
+        <option value="5">Best of 5 (Bo5)</option>
+      </select>
+      <button class="btn-primary" onclick="initNewDraft()">New Series</button>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <!-- Blue Side Column -->
+    <div class="side-column blue-side">
+      <div class="side-header">
+        <span id="blue-name" style="color: var(--blue-side);">Cloud9 Kia</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">BLUE SIDE</span>
+      </div>
+      <div>
+        <div class="section-title">Bans</div>
+        <div class="bans-row" id="blue-bans-row">
+          <div class="ban-slot" id="b-ban-1">-</div>
+          <div class="ban-slot" id="b-ban-2">-</div>
+          <div class="ban-slot" id="b-ban-3">-</div>
+          <div class="ban-slot" id="b-ban-4">-</div>
+          <div class="ban-slot" id="b-ban-5">-</div>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column;">
+        <div class="section-title">Picks</div>
+        <div class="picks-list" id="blue-picks-list">
+          <div class="pick-slot" id="b-pick-1"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 1</span></div></div>
+          <div class="pick-slot" id="b-pick-2"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 2</span></div></div>
+          <div class="pick-slot" id="b-pick-3"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 3</span></div></div>
+          <div class="pick-slot" id="b-pick-4"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 4</span></div></div>
+          <div class="pick-slot" id="b-pick-5"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 5</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Stage -->
+    <div class="center-stage">
+      <div class="phase-banner">
+        <div>
+          <div class="turn-label" id="phase-label">Initializing Draft...</div>
+          <div class="turn-desc" id="phase-desc">Game 1 • Step 1 of 20</div>
+        </div>
+        <div class="action-row">
+          <button id="finish-game-btn" class="btn-primary" style="display: none;" onclick="finishGame()">Finish Game & Advance</button>
+        </div>
+      </div>
+
+      <div class="recommendation-panel">
+        <div class="section-title">
+          <span>🧠 AI & Strategic Recommendations</span>
+          <span style="font-size: 0.72rem; color: var(--c9-cyan);">Mastery + Composition Synergy + Counter Differential</span>
+        </div>
+        <div class="rec-cards" id="recommendations-container">
+          <div style="color: var(--text-muted); font-size: 0.8rem;">Loading recommendations...</div>
+        </div>
+      </div>
+
+      <div class="champion-selector">
+        <div class="search-bar">
+          <input type="text" id="champ-search" placeholder="Search champion (e.g. Gnar, Vi, Ahri)..." oninput="renderChampionGrid()">
+          <select id="role-filter" onchange="renderChampionGrid()">
+            <option value="All">All Roles</option>
+            <option value="Top">Top</option>
+            <option value="Jungle">Jungle</option>
+            <option value="Mid">Mid</option>
+            <option value="Bot">Bot</option>
+            <option value="Support">Support</option>
+          </select>
+        </div>
+        <div class="champs-grid" id="champs-grid"></div>
+      </div>
+    </div>
+
+    <!-- Red Side Column -->
+    <div class="side-column red-side">
+      <div class="side-header">
+        <span id="red-name" style="color: var(--red-side);">Opponent</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">RED SIDE</span>
+      </div>
+      <div>
+        <div class="section-title">Bans</div>
+        <div class="bans-row" id="red-bans-row">
+          <div class="ban-slot" id="r-ban-1">-</div>
+          <div class="ban-slot" id="r-ban-2">-</div>
+          <div class="ban-slot" id="r-ban-3">-</div>
+          <div class="ban-slot" id="r-ban-4">-</div>
+          <div class="ban-slot" id="r-ban-5">-</div>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column;">
+        <div class="section-title">Picks</div>
+        <div class="picks-list" id="red-picks-list">
+          <div class="pick-slot" id="r-pick-1"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 1</span></div></div>
+          <div class="pick-slot" id="r-pick-2"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 2</span></div></div>
+          <div class="pick-slot" id="r-pick-3"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 3</span></div></div>
+          <div class="pick-slot" id="r-pick-4"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 4</span></div></div>
+          <div class="pick-slot" id="r-pick-5"><div class="pick-info-left"><span class="pick-name">-</span><span class="pick-role">Pick 5</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div>
+      <div class="section-title">🔒 Series Fearless Lockout Ledger</div>
+      <div style="color: var(--text-muted); font-size: 0.78rem;">Champions picked in previous games and permanently locked for upcoming games:</div>
+      <div class="lockout-pills" id="lockout-pills">
+        <span style="color: var(--text-muted); font-size: 0.75rem;">None yet (Game 1 active)</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">🎯 Opponent Scouting & Choke Point Vulnerabilities</div>
+      <div id="opponent-choke-summary" style="color: var(--text-muted); font-size: 0.78rem;">Select an opponent to inspect comfort pools.</div>
+    </div>
+  </div>
+
+  <script>
+    let currentSeriesId = "series-c9-live";
+    let draftState = null;
+    let precomputedData = null;
+    let isOfflineStaticMode = false;
+
+    const OFFICIAL_SEQUENCE = [
+      { step: 1, side: "blue", action: "ban", label: "Blue Ban 1" },
+      { step: 2, side: "red", action: "ban", label: "Red Ban 1" },
+      { step: 3, side: "blue", action: "ban", label: "Blue Ban 2" },
+      { step: 4, side: "red", action: "ban", label: "Red Ban 2" },
+      { step: 5, side: "blue", action: "ban", label: "Blue Ban 3" },
+      { step: 6, side: "red", action: "ban", label: "Red Ban 3" },
+      { step: 7, side: "blue", action: "pick", label: "Blue Pick 1" },
+      { step: 8, side: "red", action: "pick", label: "Red Pick 1" },
+      { step: 9, side: "red", action: "pick", label: "Red Pick 2" },
+      { step: 10, side: "blue", action: "pick", label: "Blue Pick 2" },
+      { step: 11, side: "blue", action: "pick", label: "Blue Pick 3" },
+      { step: 12, side: "red", action: "pick", label: "Red Pick 3" },
+      { step: 13, side: "red", action: "ban", label: "Red Ban 4" },
+      { step: 14, side: "blue", action: "ban", label: "Blue Ban 4" },
+      { step: 15, side: "red", action: "ban", label: "Red Ban 5" },
+      { step: 16, side: "blue", action: "ban", label: "Blue Ban 5" },
+      { step: 17, side: "red", action: "pick", label: "Red Pick 4" },
+      { step: 18, side: "blue", action: "pick", label: "Blue Pick 4" },
+      { step: 19, side: "blue", action: "pick", label: "Blue Pick 5" },
+      { step: 20, side: "red", action: "pick", label: "Red Pick 5" }
+    ];
+
+    async function loadTeams() {
+      if (window.location.protocol === "file:" || window.location.hostname.includes("github.io") || (window.location.port !== "8000" && window.location.port !== "8080")) {
+        isOfflineStaticMode = true;
+      }
+      if (!isOfflineStaticMode) {
+        try {
+          const res = await fetch("/api/teams");
+          if (!res.ok) throw new Error("API offline");
+          const data = await res.json();
+          populateTeams(data.teams);
+          return;
+        } catch (e) {
+          isOfflineStaticMode = true;
+        }
+      }
+      try {
+        const res = await fetch("precomputed_data.json");
+        precomputedData = await res.json();
+        populateTeams(precomputedData.teams);
+      } catch (err) {
+        console.error("Data load failed:", err);
+      }
+    }
+
+    function populateTeams(teams) {
+      const select = document.getElementById("team-select");
+      select.innerHTML = "";
+      teams.filter(t => !t.is_c9).forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.name;
+        opt.innerText = `${t.name} (${t.series_count} series)`;
+        select.appendChild(opt);
+      });
+      const preferred = teams.find(t => t.name.includes("100 Thieves") || t.name.includes("Liquid"));
+      if (preferred) select.value = preferred.name;
+    }
+
+    async function initNewDraft() {
+      const enemyTeam = document.getElementById("team-select").value || "100 Thieves";
+      const mode = document.getElementById("mode-select").value;
+      const maxGames = parseInt(document.getElementById("format-select").value);
+
+      if (!isOfflineStaticMode) {
+        try {
+          const res = await fetch("/api/draft/new", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              series_id: currentSeriesId,
+              team_blue: "Cloud9 Kia",
+              team_red: enemyTeam,
+              fearless_mode: mode,
+              max_games: maxGames
+            })
+          });
+          if (res.ok) {
+            draftState = await res.json();
+            await updateUI();
+            await loadOpponentScout();
+            return;
+          }
+        } catch (e) {
+          isOfflineStaticMode = true;
+        }
+      }
+
+      draftState = {
+        series_id: currentSeriesId,
+        team_blue: "Cloud9 Kia",
+        team_red: enemyTeam,
+        fearless_mode: mode,
+        max_games: maxGames,
+        current_game: 1,
+        current_step_index: 0,
+        is_draft_complete: false,
+        current_step: {
+          step_number: 1,
+          side: "blue",
+          action: "ban",
+          phase_label: "Blue Ban 1"
+        },
+        blue_bans: [],
+        red_bans: [],
+        blue_picks: [],
+        red_picks: [],
+        locked_champions_blue: [],
+        locked_champions_red: [],
+        series_lockouts: {},
+        completed_games: []
+      };
+
+      await updateUI();
+      await loadOpponentScout();
+    }
+
+    async function updateUI() {
+      if (!draftState) return;
+
+      document.getElementById("blue-name").innerText = draftState.team_blue;
+      document.getElementById("red-name").innerText = draftState.team_red;
+
+      const phaseLabelEl = document.getElementById("phase-label");
+      const phaseDescEl = document.getElementById("phase-desc");
+      const finishBtn = document.getElementById("finish-game-btn");
+
+      if (draftState.is_draft_complete) {
+        phaseLabelEl.innerText = `Game ${draftState.current_game} Draft Complete!`;
+        phaseDescEl.innerText = "All picks and bans locked. Click button to record game and advance.";
+        finishBtn.style.display = "block";
+      } else if (draftState.current_step) {
+        const step = draftState.current_step;
+        phaseLabelEl.innerText = `${step.phase_label} (${step.side.toUpperCase()})`;
+        phaseDescEl.innerText = `Game ${draftState.current_game} • Step ${step.step_number} of 20`;
+        finishBtn.style.display = "none";
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const banSlotB = document.getElementById(`b-ban-${i+1}`);
+        if (i < draftState.blue_bans.length) {
+          banSlotB.innerText = draftState.blue_bans[i];
+          banSlotB.classList.add("filled");
+        } else {
+          banSlotB.innerText = "-";
+          banSlotB.classList.remove("filled");
+        }
+
+        const pickSlotB = document.getElementById(`b-pick-${i+1}`);
+        const pickNameB = pickSlotB.querySelector(".pick-name");
+        if (i < draftState.blue_picks.length) {
+          pickNameB.innerText = draftState.blue_picks[i];
+          pickSlotB.classList.add("filled");
+        } else {
+          pickNameB.innerText = "-";
+          pickSlotB.classList.remove("filled");
+        }
+
+        const banSlotR = document.getElementById(`r-ban-${i+1}`);
+        if (i < draftState.red_bans.length) {
+          banSlotR.innerText = draftState.red_bans[i];
+          banSlotR.classList.add("filled");
+        } else {
+          banSlotR.innerText = "-";
+          banSlotR.classList.remove("filled");
+        }
+
+        const pickSlotR = document.getElementById(`r-pick-${i+1}`);
+        const pickNameR = pickSlotR.querySelector(".pick-name");
+        if (i < draftState.red_picks.length) {
+          pickNameR.innerText = draftState.red_picks[i];
+          pickSlotR.classList.add("filled");
+        } else {
+          pickNameR.innerText = "-";
+          pickSlotR.classList.remove("filled");
+        }
+      }
+
+      const lockoutContainer = document.getElementById("lockout-pills");
+      const lockouts = draftState.series_lockouts || {};
+      const lockedEntries = Object.entries(lockouts);
+      if (lockedEntries.length === 0) {
+        lockoutContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 0.75rem;">None yet (Game 1 active)</span>';
+      } else {
+        lockoutContainer.innerHTML = lockedEntries.map(([champ, info]) => `
+          <div class="lockout-pill">${champ} (G${info.game}: ${info.team})</div>
+        `).join("");
+      }
+
+      await fetchRecommendations();
+      renderChampionGrid();
+    }
+
+    async function fetchRecommendations() {
+      const container = document.getElementById("recommendations-container");
+      if (draftState.is_draft_complete) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">Draft is complete for this game.</div>';
+        return;
+      }
+
+      if (!isOfflineStaticMode) {
+        try {
+          const res = await fetch(`/api/draft/${currentSeriesId}/recommend`);
+          if (res.ok) {
+            const data = await res.json();
+            renderRecCards(data.recommendations);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const step = draftState.current_step;
+      const isBlue = step.side === "blue";
+      const actingTeamName = isBlue ? draftState.team_blue : draftState.team_red;
+      const enemyTeamName = isBlue ? draftState.team_red : draftState.team_blue;
+
+      const teamData = precomputedData?.teams.find(t => t.name === (step.action === "ban" ? enemyTeamName : actingTeamName));
+      const recs = [];
+
+      if (teamData) {
+        teamData.players.forEach(p => {
+          p.top_picks.forEach(c => {
+            const taken = [...draftState.blue_bans, ...draftState.red_bans, ...draftState.blue_picks, ...draftState.red_picks];
+            const locked = isBlue ? draftState.locked_champions_blue : draftState.locked_champions_red;
+            if (!taken.includes(c.name) && !locked.includes(c.name)) {
+              recs.push({
+                champion: c.name,
+                role: p.role,
+                score: Math.round(c.win_rate * 0.7 + c.games * 1.5),
+                reason: `${p.name}'s comfort ${c.name} (${c.games}G, ${c.win_rate}% WR)`,
+                choke_point_flag: false
+              });
+            }
+          });
+        });
+      }
+
+      recs.sort((a, b) => b.score - a.score);
+      renderRecCards(recs.slice(0, 5));
+    }
+
+    function renderRecCards(recs) {
+      const container = document.getElementById("recommendations-container");
+      if (!recs || recs.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No recommendations available for current phase.</div>';
+        return;
+      }
+
+      container.innerHTML = recs.map(r => `
+        <div class="rec-card ${r.choke_point_flag ? 'choke' : ''}" onclick="selectChampion('${r.champion}')">
+          <div class="rec-top">
+            <span class="rec-name">${r.champion}</span>
+            <span class="rec-score">${r.score}</span>
+          </div>
+          <div class="rec-reason">${r.reason}</div>
+        </div>
+      `).join("");
+    }
+
+    async function selectChampion(name) {
+      if (!name || draftState.is_draft_complete) return;
+
+      if (!isOfflineStaticMode) {
+        try {
+          const res = await fetch(`/api/draft/${currentSeriesId}/action`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ champion: name })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            draftState = data.draft;
+            await updateUI();
+            return;
+          } else {
+            alert(data.error);
+            return;
+          }
+        } catch (e) {
+          isOfflineStaticMode = true;
+        }
+      }
+
+      const step = draftState.current_step;
+      const taken = [...draftState.blue_bans, ...draftState.red_bans, ...draftState.blue_picks, ...draftState.red_picks];
+      if (taken.includes(name)) {
+        alert(`'${name}' is already picked or banned in this game.`);
+        return;
+      }
+
+      if (step.action === "pick") {
+        const locked = step.side === "blue" ? draftState.locked_champions_blue : draftState.locked_champions_red;
+        if (locked.includes(name)) {
+          const info = draftState.series_lockouts[name];
+          alert(`FEARLESS VIOLATION: '${name}' was picked in Game ${info.game} by ${info.team} and cannot be picked again.`);
+          return;
+        }
+        if (step.side === "blue") draftState.blue_picks.push(name);
+        else draftState.red_picks.push(name);
+      } else {
+        if (step.side === "blue") draftState.blue_bans.push(name);
+        else draftState.red_bans.push(name);
+      }
+
+      draftState.current_step_index += 1;
+      if (draftState.current_step_index >= OFFICIAL_SEQUENCE.length) {
+        draftState.is_draft_complete = true;
+        draftState.current_step = null;
+      } else {
+        const next = OFFICIAL_SEQUENCE[draftState.current_step_index];
+        draftState.current_step = {
+          step_number: next.step,
+          side: next.side,
+          action: next.action,
+          phase_label: next.label
+        };
+      }
+
+      await updateUI();
+    }
+
+    async function finishGame() {
+      if (!isOfflineStaticMode) {
+        try {
+          const res = await fetch(`/api/draft/${currentSeriesId}/finish-game`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ winner: "blue" })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            draftState = data.draft;
+            await updateUI();
+            return;
+          }
+        } catch (e) {
+          isOfflineStaticMode = true;
+        }
+      }
+
+      draftState.blue_picks.forEach(c => {
+        draftState.series_lockouts[c] = { game: draftState.current_game, team: draftState.team_blue };
+        draftState.locked_champions_blue.push(c);
+        if (draftState.fearless_mode === "hard") draftState.locked_champions_red.push(c);
+      });
+      draftState.red_picks.forEach(c => {
+        draftState.series_lockouts[c] = { game: draftState.current_game, team: draftState.team_red };
+        draftState.locked_champions_red.push(c);
+        if (draftState.fearless_mode === "hard") draftState.locked_champions_blue.push(c);
+      });
+
+      draftState.completed_games.push({
+        game_number: draftState.current_game,
+        blue_picks: [...draftState.blue_picks],
+        red_picks: [...draftState.red_picks],
+        blue_bans: [...draftState.blue_bans],
+        red_bans: [...draftState.red_bans]
+      });
+
+      draftState.current_game += 1;
+      draftState.current_step_index = 0;
+      draftState.is_draft_complete = false;
+      draftState.blue_bans = [];
+      draftState.red_bans = [];
+      draftState.blue_picks = [];
+      draftState.red_picks = [];
+      const firstStep = OFFICIAL_SEQUENCE[0];
+      draftState.current_step = {
+        step_number: 1,
+        side: firstStep.side,
+        action: firstStep.action,
+        phase_label: firstStep.label
+      };
+
+      await updateUI();
+    }
+
+    async function loadOpponentScout() {
+      const enemyName = draftState ? draftState.team_red : "100 Thieves";
+      const container = document.getElementById("opponent-choke-summary");
+
+      if (!isOfflineStaticMode) {
+        try {
+          const teamsRes = await fetch("/api/teams");
+          if (teamsRes.ok) {
+            const teamsData = await teamsRes.json();
+            const match = teamsData.teams.find(t => t.name === enemyName);
+            if (match) {
+              const scoutRes = await fetch(`/api/scout/${match.team_id}`);
+              if (scoutRes.ok) {
+                const scoutData = await scoutRes.json();
+                renderScoutData(scoutData.roster_scout);
+                return;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (precomputedData) {
+        const team = precomputedData.teams.find(t => t.name === enemyName);
+        if (team) {
+          const rosterScout = team.players.map(p => ({
+            name: p.name,
+            role: p.role,
+            pool_depth: p.top_picks.length,
+            comfort_count: p.top_picks.filter(c => c.games >= 2).length,
+            choke_vulnerable: p.top_picks.length <= 3,
+            comfort_picks: p.top_picks
+          }));
+          renderScoutData(rosterScout);
+        }
+      }
+    }
+
+    function renderScoutData(roster) {
+      const container = document.getElementById("opponent-choke-summary");
+      if (!roster) return;
+      container.innerHTML = roster.map(p => `
+        <div style="margin-bottom: 6px;">
+          <strong style="color: #fff;">${p.name}</strong> [${p.role}]: ${p.pool_depth} total comfort picks.
+          ${p.choke_vulnerable ? '<span style="color: var(--warning-gold); font-weight: 700;">⚠️ Choke Vulnerable!</span>' : ''}
+          <div style="color: var(--text-muted); font-size: 0.72rem;">Top: ${p.comfort_picks.map(c => `${c.name} (${c.win_rate}%)`).join(", ")}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderChampionGrid() {
+      const grid = document.getElementById("champs-grid");
+      const search = (document.getElementById("champ-search").value || "").toLowerCase();
+
+      const taken = new Set([
+        ...(draftState?.blue_bans || []),
+        ...(draftState?.red_bans || []),
+        ...(draftState?.blue_picks || []),
+        ...(draftState?.red_picks || [])
+      ]);
+
+      const isPickStep = draftState?.current_step?.action === "pick";
+      const actingSide = draftState?.current_step?.side;
+      const lockedChamps = new Set(
+        actingSide === "blue" ? (draftState?.locked_champions_blue || []) : (draftState?.locked_champions_red || [])
+      );
+
+      const defaultChamps = [
+        "Aatrox", "Ahri", "Akali", "Alistar", "Ambessa", "Anivia", "Annie", "Aphelios", "Ashe", "Aurelion Sol",
+        "Azir", "Bard", "Blitzcrank", "Brand", "Braum", "Caitlyn", "Camille", "Cassiopeia", "Cho'Gath", "Corki",
+        "Darius", "Diana", "Draven", "Dr. Mundo", "Ekko", "Elise", "Evelynn", "Ezreal", "Fiddlesticks", "Fiora",
+        "Galio", "Gangplank", "Garen", "Gnar", "Gragas", "Graves", "Gwen", "Hecarim", "Heimerdinger", "Hwei",
+        "Illaoi", "Irelia", "Ivern", "Janna", "Jarvan IV", "Jax", "Jayce", "Jhin", "Jinx", "K'Sante",
+        "Kai'Sa", "Kalista", "Karma", "Karthus", "Kassadin", "Katarina", "Kayle", "Kayn", "Kennen", "Kha'Zix",
+        "Kindred", "Kled", "Kog'Maw", "LeBlanc", "Lee Sin", "Leona", "Lillia", "Lissandra", "Lucian", "Lulu",
+        "Lux", "Malphite", "Malzahar", "Maokai", "Master Yi", "Milio", "Miss Fortune", "Mordekaiser", "Morgana", "Naafiri",
+        "Nami", "Nasus", "Nautilus", "Neeko", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump", "Olaf", "Orianna",
+        "Ornn", "Pantheon", "Poppy", "Pyke", "Qiyana", "Quinn", "Rakan", "Rammus", "Rek'Sai", "Rell",
+        "Renata Glasc", "Renekton", "Rengar", "Riven", "Rumble", "Ryze", "Samira", "Sejuani", "Senna", "Seraphine",
+        "Sett", "Shaco", "Shen", "Shyvana", "Singed", "Sion", "Sivir", "Skarner", "Smolder", "Sona",
+        "Soraka", "Swain", "Sylas", "Syndra", "Tahm Kench", "Taliyah", "Talon", "Taric", "Teemo", "Thresh",
+        "Tristana", "Trundle", "Tryndamere", "Twisted Fate", "Twitch", "Udyr", "Urgot", "Varus", "Vayne", "Veigar",
+        "Vel'Koz", "Vex", "Vi", "Viktor", "Vladimir", "Volibear", "Warwick", "Wukong", "Xayah", "Xerath",
+        "Xin Zhao", "Yasuo", "Yone", "Yorick", "Yuumi", "Zac", "Zed", "Zeri", "Ziggs", "Zilean", "Zoe", "Zyra"
+      ];
+
+      const filtered = defaultChamps.filter(c => {
+        if (search && !c.toLowerCase().includes(search)) return false;
+        return true;
+      });
+
+      grid.innerHTML = filtered.map(c => {
+        const isTakenInGame = taken.has(c);
+        const isFearlessLocked = isPickStep && lockedChamps.has(c);
+        const disabled = isTakenInGame || isFearlessLocked;
+
+        return `
+          <button class="champ-btn ${disabled ? 'locked' : ''}" 
+                  ${disabled ? 'disabled' : ''} 
+                  onclick="selectChampion('${c}')">
+            ${c}
+          </button>
+        `;
+      }).join("");
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadTeams();
+      await initNewDraft();
+    });
+  </script>
+</body>
+</html>

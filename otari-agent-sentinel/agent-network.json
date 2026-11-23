@@ -1,0 +1,101 @@
+{
+  "$schema": "https://agenticweb.cognizant.com/schemas/v1/network.json",
+  "id": "otari-agent-sentinel-network",
+  "name": "Otari Agent Sentinel Governance Network",
+  "version": "1.0.0",
+  "spec_version": "1.0",
+  "description": "Deterministic governance, pre-debit budget reservation, and multi-tier failover circuit breakers on the Mozilla Otari Gateway.",
+  "author": {
+    "name": "Siddharth Srivastava",
+    "github": "https://github.com/sidsri14",
+    "project": "https://github.com/sidsri14/otari-agent-sentinel"
+  },
+  "runtime": {
+    "type": "browser-in-page",
+    "entry": "runtime.js",
+    "version": "1.0.0"
+  },
+  "gateway": {
+    "provider": "Mozilla Otari LLM Gateway",
+    "endpoint": "https://gateway.otari.mozilla.org/v1",
+    "compatibility": "openai-v1"
+  },
+  "nodes": [
+    {
+      "id": "sentinel-classifier",
+      "name": "Semantic Complexity Classifier",
+      "role": "intent-routing",
+      "capabilities": ["semantic-tiering", "intent-detection", "cost-projection"],
+      "tiers": {
+        "FAST_OPEN_WEIGHT": {
+          "model": "meta-llama/Llama-3.1-8B-Instruct",
+          "cost_per_1k_input": 0.0001,
+          "cost_per_1k_output": 0.0002,
+          "latency_target_ms": 180
+        },
+        "BALANCED_CODE": {
+          "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+          "cost_per_1k_input": 0.0008,
+          "cost_per_1k_output": 0.0016,
+          "latency_target_ms": 450
+        },
+        "REASONING_FRONTIER": {
+          "model": "deepseek-ai/DeepSeek-R1",
+          "cost_per_1k_input": 0.0025,
+          "cost_per_1k_output": 0.0080,
+          "latency_target_ms": 1200
+        }
+      }
+    },
+    {
+      "id": "sentinel-governor",
+      "name": "Pre-Debit Budget Governor",
+      "role": "capital-preservation",
+      "capabilities": [
+        "pre-debit-reservation",
+        "atomic-reservation-lock",
+        "spend-reconciliation",
+        "zero-leakage-refunds"
+      ],
+      "invariants": {
+        "pre_flight_check": "Reservation occurs before network dispatch",
+        "fail_closed": "Insufficient quota throws 402 Payment Required before LLM call",
+        "max_reservation_tokens": 4096
+      }
+    },
+    {
+      "id": "sentinel-router",
+      "name": "Circuit-Breaker Cascading Router",
+      "role": "high-availability",
+      "capabilities": [
+        "rolling-error-tracking",
+        "http-429-fallback",
+        "latency-shedding",
+        "auto-recovery"
+      ],
+      "circuit_breaker": {
+        "failure_threshold": 3,
+        "cooldown_period_ms": 15000,
+        "half_open_successes": 2
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "name": "Chat & Interactive Console",
+      "path": "#console",
+      "type": "user-interface"
+    },
+    {
+      "name": "Virtual Key & Quota Config",
+      "path": "#config",
+      "type": "configuration-interface"
+    },
+    {
+      "name": "Agentic Inter-Network Protocol",
+      "path": "#agentic-api",
+      "type": "machine-interface",
+      "protocol": "postMessage-v1"
+    }
+  ]
+}

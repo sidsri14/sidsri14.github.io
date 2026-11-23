@@ -1,0 +1,88 @@
+{
+  "total_files": 3,
+  "scanned_files": 3,
+  "total_findings": 7,
+  "high_severity": 3,
+  "medium_severity": 2,
+  "low_severity": 2,
+  "info_severity": 0,
+  "findings": [
+    {
+      "rule_id": "QNX201",
+      "rule_name": "Missing-QCC-Security-Hardening",
+      "severity": "MEDIUM",
+      "category": "Toolchain & Build Flags",
+      "file_path": "Makefile",
+      "line_number": 2,
+      "matched_text": "CC = qcc",
+      "message": "qcc/q++ invocation detected without stack protector (-fstack-protector-strong) hardening.",
+      "remediation": "Pass -fstack-protector-strong and -D_FORTIFY_SOURCE=2 to compiler flags."
+    },
+    {
+      "rule_id": "QNX202",
+      "rule_name": "Ambiguous-Target-Architecture",
+      "severity": "LOW",
+      "category": "Toolchain & Build Flags",
+      "file_path": "Makefile",
+      "line_number": 2,
+      "matched_text": "CC = qcc",
+      "message": "qcc invocation lacks explicit target architecture variant flag.",
+      "remediation": "Specify target architecture with -Vgcc_ntox86_64 (x86_64) or -Vgcc_ntoaarch64le (ARM64)."
+    },
+    {
+      "rule_id": "QNX002",
+      "rule_name": "System-Pulse-Code-Collision",
+      "severity": "HIGH",
+      "category": "Neutrino IPC Safety",
+      "file_path": "vulnerable_service.c",
+      "line_number": 9,
+      "matched_text": "#define SENSOR_PULSE_CODE -1  // QNX002: Negative pulse code collides with kernel-reserved pulses",
+      "message": "Negative pulse code '-1' conflicts with QNX kernel-reserved pulse codes.",
+      "remediation": "Use positive pulse codes in the range _PULSE_CODE_MINAVAIL (0) to _PULSE_CODE_MAXAVAIL (127)."
+    },
+    {
+      "rule_id": "QNX003",
+      "rule_name": "Channel-Priority-Inversion-Risk",
+      "severity": "MEDIUM",
+      "category": "Real-Time Scheduling",
+      "file_path": "vulnerable_service.c",
+      "line_number": 22,
+      "matched_text": "int chid = ChannelCreate(0);",
+      "message": "ChannelCreate() called with flags=0. Channel lacks priority inheritance or fixed-priority scheduling.",
+      "remediation": "Configure _NTO_CHF_FIXED_PRIORITY or priority inheritance flags on real-time service channels."
+    },
+    {
+      "rule_id": "QNX104",
+      "rule_name": "Insecure-Library-Search-Path",
+      "severity": "LOW",
+      "category": "IFS Image Security",
+      "file_path": "vulnerable_system.bld",
+      "line_number": 10,
+      "matched_text": "LD_LIBRARY_PATH=/tmp:/proc/boot",
+      "message": "LD_LIBRARY_PATH contains relative path or writable directory (/tmp, /var).",
+      "remediation": "Restrict library search path exclusively to /proc/boot:/lib:/usr/lib."
+    },
+    {
+      "rule_id": "QNX105",
+      "rule_name": "Hardcoded-Credentials-In-Buildfile",
+      "severity": "HIGH",
+      "category": "Secrets Management",
+      "file_path": "vulnerable_system.bld",
+      "line_number": 13,
+      "matched_text": "DIAG_API_KEY=********",
+      "message": "Hardcoded sensitive credential identified in QNX buildfile.",
+      "remediation": "Inject credentials at runtime via encrypted filesystem or secure configuration daemon."
+    },
+    {
+      "rule_id": "QNX101",
+      "rule_name": "World-Writable-IFS-Permissions",
+      "severity": "HIGH",
+      "category": "IFS Image Security",
+      "file_path": "vulnerable_system.bld",
+      "line_number": 22,
+      "matched_text": "[perms=0777] /bin/telemetry_daemon = /target/telemetry_daemon",
+      "message": "Insecure file permission mask '0777' allows world-write access in QNX image.",
+      "remediation": "Change permission attribute to [perms=0755] for executables or [perms=0644] for read-only data."
+    }
+  ]
+}
