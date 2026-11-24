@@ -1,0 +1,221 @@
+{
+  "purpose": "Source-backed, reproducible GitHub PR count used in outreach. Proof of work, not income.",
+  "verified_at_utc": "2026-11-24T12:18:56.1436207Z",
+  "method": "GitHub REST API: search/issues?q=author:sidsri14+is:pr+is:merged + repos/{owner}/{repo} owner lookup",
+  "total_merged_prs": 30,
+  "upstream_merged_prs": 25,
+  "self_repo_merged_prs": 5,
+  "query": "author:sidsri14 is:pr is:merged (GitHub REST API), then per-repository owner lookup",
+  "items": [
+    {
+      "pr_number": 202,
+      "repo": "systempromptio/awesome-ai-agent-governance",
+      "upstream": true,
+      "title": "Add mcpguard - static MCP config security linter",
+      "merged_at": "2026-11-21T07:07:47Z"
+    },
+    {
+      "pr_number": 50073,
+      "repo": "BerriAI/litellm",
+      "upstream": true,
+      "title": "fix(bedrock): drop another model's signed thinking when replaying to a non-Claude Converse target",
+      "merged_at": "2026-11-06T11:15:50Z"
+    },
+    {
+      "pr_number": 18976,
+      "repo": "nushell/nushell",
+      "upstream": true,
+      "title": "fix: propagate error stream values in length, columns, and is-empty",
+      "merged_at": "2026-09-10T14:27:27Z"
+    },
+    {
+      "pr_number": 294,
+      "repo": "23andMe/Yamale",
+      "upstream": true,
+      "title": "fix: any() silently ignores literal values",
+      "merged_at": "2026-11-18T13:02:30Z"
+    },
+    {
+      "pr_number": 115,
+      "repo": "bmatcuk/doublestar",
+      "upstream": true,
+      "title": "fix brace alternation scanning with character classes",
+      "merged_at": "2026-09-19T15:30:40Z"
+    },
+    {
+      "pr_number": 5003,
+      "repo": "open-telemetry/opentelemetry-python-contrib",
+      "upstream": true,
+      "title": "Fix losing celery spans when worker_max_tasks_per_child recycles the pool child",
+      "merged_at": "2026-11-12T16:29:28Z"
+    },
+    {
+      "pr_number": 68,
+      "repo": "FBruzzesi/polars-stats",
+      "upstream": true,
+      "title": "feat: add the DiscreteUniform distribution",
+      "merged_at": "2026-08-29T12:32:06Z"
+    },
+    {
+      "pr_number": 64,
+      "repo": "FBruzzesi/polars-stats",
+      "upstream": true,
+      "title": "feat: add the Geometric distribution",
+      "merged_at": "2026-08-27T06:49:00Z"
+    },
+    {
+      "pr_number": 4595,
+      "repo": "hivecommons/hive",
+      "upstream": true,
+      "title": "≡ƒÉ¢ fix(tests): hermetic scheduler/tokens/proxy tests on live hive hosts",
+      "merged_at": "2026-08-24T00:18:49Z"
+    },
+    {
+      "pr_number": 401,
+      "repo": "yaml/go-yaml",
+      "upstream": true,
+      "title": "Bump golangci-lint to v2.13.2 and Go version to 1.27.0",
+      "merged_at": "2026-08-31T18:23:01Z"
+    },
+    {
+      "pr_number": 9945,
+      "repo": "scalar/scalar",
+      "upstream": true,
+      "title": "fix(proxy): omit Cookie header when X-Scalar-Cookie is not provided",
+      "merged_at": "2026-08-24T07:58:57Z"
+    },
+    {
+      "pr_number": 2837,
+      "repo": "mikefarah/yq",
+      "upstream": true,
+      "title": "fix(test): update expected format for unrecognised extension in format_test.go",
+      "merged_at": "2026-08-25T10:19:22Z"
+    },
+    {
+      "pr_number": 4982,
+      "repo": "open-telemetry/opentelemetry-python-contrib",
+      "upstream": true,
+      "title": "fix(logging): restore handlers and formatters on uninstrument",
+      "merged_at": "2026-11-11T08:51:31Z"
+    },
+    {
+      "pr_number": 145,
+      "repo": "phasespace-labs/palinode",
+      "upstream": true,
+      "title": "fix(lint): render wiki drift and missing priority in text output",
+      "merged_at": "2026-08-22T17:02:13Z"
+    },
+    {
+      "pr_number": 283,
+      "repo": "srelens/srelens",
+      "upstream": true,
+      "title": "fix(mcp): audit-log resources/subscribe and unsubscribe",
+      "merged_at": "2026-08-19T21:55:04Z"
+    },
+    {
+      "pr_number": 5545,
+      "repo": "open-telemetry/opentelemetry-python",
+      "upstream": true,
+      "title": "fix(sdk): bound get_aggregated_resources wait to per-detector timeout",
+      "merged_at": "2026-09-01T08:53:52Z"
+    },
+    {
+      "pr_number": 204,
+      "repo": "srelens/srelens",
+      "upstream": true,
+      "title": "refactor(mcp): rename kind resolver API",
+      "merged_at": "2026-08-14T07:17:40Z"
+    },
+    {
+      "pr_number": 83,
+      "repo": "coder/observability",
+      "upstream": true,
+      "title": "fix: preserve unknown status when metrics are missing",
+      "merged_at": "2026-08-03T19:02:55Z"
+    },
+    {
+      "pr_number": 639,
+      "repo": "ENTERPILOT/GoModel",
+      "upstream": true,
+      "title": "feat(audio): add translations endpoint",
+      "merged_at": "2026-08-04T14:43:30Z"
+    },
+    {
+      "pr_number": 113,
+      "repo": "mex-memory/mex",
+      "upstream": true,
+      "title": "feat(graph): add FastAPI route resolver",
+      "merged_at": "2026-09-19T06:20:48Z"
+    },
+    {
+      "pr_number": 48,
+      "repo": "tailscale/hujson",
+      "upstream": true,
+      "title": "Reject ambiguous Unicode line separators in comments",
+      "merged_at": "2026-07-27T12:40:31Z"
+    },
+    {
+      "pr_number": 827,
+      "repo": "DataDog/guarddog",
+      "upstream": true,
+      "title": "feat: add Rust crates support",
+      "merged_at": "2026-08-04T08:24:00Z"
+    },
+    {
+      "pr_number": 1066,
+      "repo": "grafana/gcx",
+      "upstream": true,
+      "title": "fix(config): let env credentials override keychain failures",
+      "merged_at": "2026-08-20T16:27:28Z"
+    },
+    {
+      "pr_number": 319,
+      "repo": "getsentry/tacos-gha",
+      "upstream": true,
+      "title": "Fix dependent slice planning when a slice is emptied",
+      "merged_at": "2026-08-05T21:23:59Z"
+    },
+    {
+      "pr_number": 2249,
+      "repo": "temporalio/sdk-typescript",
+      "upstream": true,
+      "title": "fix(common): preserve zero optional durations",
+      "merged_at": "2026-08-24T08:47:30Z"
+    },
+    {
+      "pr_number": 1,
+      "repo": "sidsri14/sidsri14",
+      "upstream": false,
+      "title": "Feature DriftGuard on profile",
+      "merged_at": "2026-07-20T10:51:08Z"
+    },
+    {
+      "pr_number": 2,
+      "repo": "sidsri14/driftguard",
+      "upstream": false,
+      "title": "Prepare v0.3 release",
+      "merged_at": "2026-07-20T10:38:30Z"
+    },
+    {
+      "pr_number": 1,
+      "repo": "sidsri14/driftguard",
+      "upstream": false,
+      "title": "Complete DriftGuard v0.3 launch readiness",
+      "merged_at": "2026-07-19T13:12:17Z"
+    },
+    {
+      "pr_number": 1,
+      "repo": "sidsri14/AgentBurn",
+      "upstream": false,
+      "title": "Initial TypeScript SDK and MVP scaffold: ingestion validation, loop rules, and tests",
+      "merged_at": "2026-04-30T18:51:17Z"
+    },
+    {
+      "pr_number": 1,
+      "repo": "sidsri14/Invoiceflow",
+      "upstream": false,
+      "title": "Add env example and security hardening; extend Monitor model and sync services/front-end",
+      "merged_at": "2026-03-27T20:15:45Z"
+    }
+  ]
+}
