@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reproducible test verification - Siddharth Srivastava</title>
+  <meta name="description" content="Source-backed, reproducible local test results across 15 owned repositories. No customer benchmark claimed.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .wrap{max-width:960px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+    table{width:100%;border-collapse:collapse;margin:1.5rem 0}
+    th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid #d9dee6;font-size:.92rem}
+    th{background:#f3f5f8}
+    td.num,th.num{text-align:right}
+    code{background:#f3f5f8;padding:.1rem .35rem;border-radius:4px}
+    .note{background:#fff8e6;border-left:4px solid #e0a800;padding:.9rem 1rem;margin:1.25rem 0}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p><a href="index.html">&larr; Back to portfolio</a></p>
+    <h1>Reproducible local test verification</h1>
+    <p class="section-sub">Verified 2026-11-24 10:50:23 - 10:50:49 UTC. One script ran the test suite of every owned repository that has a test script, then parsed pass counts from the live command output. Nothing on this page is typed in by hand.</p>
+
+    <div class="stats-bar">
+      <div class="stat"><strong>15 / 15</strong><span>repositories green</span></div>
+      <div class="stat"><strong>201</strong><span>passing tests, summed from live runs</span></div>
+      <div class="stat"><strong>0</strong><span>failed suites</span></div>
+    </div>
+
+    <h2>Per-repository results</h2>
+    <table>
+      <thead><tr><th>Repository</th><th>Command</th><th class="num">Passing</th><th class="num">Failed</th><th class="num">Exit</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/sidsri14/agentsec">agentsec</a></td><td><code>npm test --silent</code></td><td class="num">12</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/mcpguard">mcpguard</a></td><td><code>npm test --silent</code></td><td class="num">12</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/toolshield">toolshield</a></td><td><code>npm test --silent</code></td><td class="num">16</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/flowguard">flowguard</a></td><td><code>npm test --silent</code></td><td class="num">10</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/agentpay-hsk">agentpay-hsk</a></td><td><code>npm test --silent</code></td><td class="num">12</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/dreamdex-agent-bot">dreamdex-agent-bot</a></td><td><code>npm test --silent</code></td><td class="num">21</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/otari-agent-sentinel">otari-agent-sentinel</a></td><td><code>npm test --silent</code></td><td class="num">12</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/paypal-scopeguard">paypal-scopeguard</a></td><td><code>npm test --silent</code></td><td class="num">25</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/jigjoy-concurrent-agents">jigjoy-concurrent-agents</a></td><td><code>npm test --silent</code></td><td class="num">17</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/resilient-ai-worker-kit">resilient-ai-worker-kit</a></td><td><code>npm test --silent</code></td><td class="num">7</td><td class="num">n/a</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/talentiq-resume-screener">talentiq-resume-screener</a></td><td><code>npm test --silent</code></td><td class="num">4</td><td class="num">n/a</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/forgemesh">forgemesh</a></td><td><code>npm test --silent</code></td><td class="num">11</td><td class="num">n/a</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/hybrid-ai-router">hybrid-ai-router</a></td><td><code>npm test --silent</code></td><td class="num">11</td><td class="num">n/a</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/atlassian-rovo-guard">atlassian-rovo-guard</a></td><td><code>npm test --silent</code></td><td class="num">10</td><td class="num">n/a</td><td class="num">0</td></tr>
+        <tr><td><a href="https://github.com/sidsri14/qnx-guard">qnx-guard</a></td><td><code>python -m pytest -q</code></td><td class="num">21</td><td class="num">n/a</td><td class="num">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Scope and limits.</strong> These are independently run local test suites in fifteen repositories owned by <code>sidsri14</code>, summed by one script. This is a reconstructible local figure - not the older 159 headline, not a customer benchmark, and not evidence of production savings or performance. Upstream forks, non-owned repositories, and repositories with no collected tests are excluded.
+    </div>
+
+    <h2>Reproduce it</h2>
+    <p>The generator is <code>D:\income-engine\verify-portfolio-tests.js</code>; the machine-readable evidence for this run is <code>portfolio-test-evidence-2026-11-24T10-50-23-304Z.json</code> with the per-repository command output tails. Every repository remote was checked as <code>https://github.com/sidsri14/&lt;repo&gt;.git</code> before the run.</p>
+    <p><a class="btn btn-secondary" href="index.html#services">See scoped paid services</a></p>
+  </main>
+</body>
+</html>
