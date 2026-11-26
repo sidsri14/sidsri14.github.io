@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shipped Implementation Fixes — Fixed-Scope Offers</title>
-  <meta name="description" content="Two fixed-scope implementation offers based on publicly shipped commits: atomic BullMQ token-budget reservation and Token-2022 starter CI/fee-math repair. Advertised prices only; scope and payment agreed before work." />
+  <meta name="description" content="Three fixed-scope implementation offers based on publicly shipped commits: atomic BullMQ token-budget reservation, Token-2022 starter CI/fee-math repair, and an offline checkout-link consistency gate. Advertised prices only; scope and payment agreed before work." />
   <link rel="canonical" href="https://sidsri14.github.io/implementation-packages.html" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
@@ -25,13 +25,14 @@
       <div class="pill">FIXED-SCOPE IMPLEMENTATION OFFERS</div>
       <h1>Shipped fixes you can verify before hiring</h1>
       <p>
-        These two packages are based on changes I already implemented, tested and published in my own
+        These three packages are based on changes I already implemented, tested and published in my own
         repositories. They are <strong>advertised offers, not received income</strong>. Scope, acceptance checks
         and funded payment terms are agreed in writing before any work starts.
       </p>
       <div class="cta-row">
         <a class="btn btn-primary" href="mailto:sidsri1502@gmail.com?subject=BullMQ%20Budget%20Reservation%20Package">Request the Budget Reservation Package</a>
         <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Token-2022%20CI%20Repair%20Package">Request the CI Repair Package</a>
+        <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Checkout%20Link%20Consistency%20Gate">Request the Checkout Gate</a>
       </div>
     </section>
 
@@ -82,6 +83,31 @@
           <p>
             <strong>Excludes:</strong> security audit, on-chain deployment, validator-backed integration tests,
             and any claim that the example is audited or production-ready.
+          </p>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-tag">Node.js / static HTML / CI</div>
+            <h3>Checkout Link Consistency Gate</h3>
+            <p>
+              Add an offline CI check that fails when a static page advertises one product or price but its
+              checkout button points to another. Configure a product catalog, wire the check into CI, and add
+              fixtures for the exact regression so the mistake cannot silently return.
+            </p>
+            <div class="price">USD 100 fixed scope</div>
+            <p>
+              <strong>Already shipped proof:</strong>
+              <a href="https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3" target="_blank" rel="noopener">commit 9eaa2b3</a>,
+              6 passing tests, plus a
+              <a href="https://github.com/sidsri14/commit/45791ea2af57abfe418ae8943066261de1206c15" target="_blank" rel="noopener">real repair commit 45791ea</a>
+              where a USD 79 InvoiceFlow card pointed to a USD 39 different-product checkout.
+            </p>
+          </div>
+          <p>
+            <strong>Excludes:</strong> live provider verification, payment processing, entitlement or tax checks,
+            and any claim that the catalog is truthful without human review. No payment has been received for
+            this advertised offer.
           </p>
         </article>
       </div>
