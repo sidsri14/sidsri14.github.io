@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shipped Implementation Fixes — Fixed-Scope Offers</title>
+  <meta name="description" content="Two fixed-scope implementation offers based on publicly shipped commits: atomic BullMQ token-budget reservation and Token-2022 starter CI/fee-math repair. Advertised prices only; scope and payment agreed before work." />
+  <link rel="canonical" href="https://sidsri14.github.io/implementation-packages.html" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">Siddharth Srivastava (@sidsri14)</div>
+      <nav class="nav-links">
+        <a href="index.html#services">Paid Services</a>
+        <a href="index.html#kits">Starter Kits</a>
+        <a href="index.html#proof">Selected Projects</a>
+        <a href="implementation-packages.html">Shipped Fixes</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pill">FIXED-SCOPE IMPLEMENTATION OFFERS</div>
+      <h1>Shipped fixes you can verify before hiring</h1>
+      <p>
+        These two packages are based on changes I already implemented, tested and published in my own
+        repositories. They are <strong>advertised offers, not received income</strong>. Scope, acceptance checks
+        and funded payment terms are agreed in writing before any work starts.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="mailto:sidsri1502@gmail.com?subject=BullMQ%20Budget%20Reservation%20Package">Request the Budget Reservation Package</a>
+        <a class="btn btn-secondary" href="mailto:sidsri1502@gmail.com?subject=Token-2022%20CI%20Repair%20Package">Request the CI Repair Package</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>What you get</h2>
+      <p class="section-sub">Each package is a bounded implementation adapted to an agreed repository. Nothing starts without a funded agreement.</p>
+      <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-tag">Node.js / TypeScript / Redis</div>
+            <h3>Atomic token-budget reservation retrofit</h3>
+            <p>
+              Add a Lua-backed reserve/settle path to a BullMQ worker: reserve estimated tokens before a
+              provider call, settle to the reported count on success, release the reservation on failure,
+              and keep the legacy precheck for compatibility. Delivered with unit tests and truthful limits docs.
+            </p>
+            <div class="price">USD 300 fixed scope</div>
+            <p>
+              <strong>Already shipped proof:</strong>
+              <a href="https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f" target="_blank" rel="noopener">commit 7c6a80f</a>,
+              10 mock-based tests passing, TypeScript build passing.
+            </p>
+          </div>
+          <p>
+            <strong>Excludes:</strong> live provider adapters, production deployment, Redis Cluster/multi-primary
+            design, security audit, and any guarantee of a hard spending cap. Source remains public; this is a
+            scoped adaptation engagement.
+          </p>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-tag">Rust / Anchor / pnpm</div>
+            <h3>Token-2022 starter CI and fee-math repair</h3>
+            <p>
+              Repair a TypeScript/Rust starter so CI actually runs on the live branch: correct pnpm workspace
+              config, committed lockfiles, ignore rules, typecheck fixes, rustfmt cleanup, and deterministic
+              basis-point fee helpers with tests that need no validator or RPC.
+            </p>
+            <div class="price">USD 150 fixed scope</div>
+            <p>
+              <strong>Already shipped proof:</strong>
+              <a href="https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5" target="_blank" rel="noopener">commit d24e5e5</a>,
+              <a href="https://github.com/sidsri14/solana-anchor-token2022-starter/actions/runs/45884741820" target="_blank" rel="noopener">CI run 45884741820 — success</a>,
+              6 deterministic tests passing.
+            </p>
+          </div>
+          <p>
+            <strong>Excludes:</strong> security audit, on-chain deployment, validator-backed integration tests,
+            and any claim that the example is audited or production-ready.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Terms and disclosure</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Payment and scope</h3>
+          <p>
+            A written scope, acceptance checks and payment terms come first. I do not ask buyers for card
+            details, wallet or PayPal access, KYC, or GST handling, and I do not make paid upgrades on a
+            client's behalf. One revision round is included; extra scope is quoted separately.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Who you are hiring</h3>
+          <p>
+            Independent, AI-assisted developer based in Lucknow, India. BCA student at Manipal University
+            Jaipur, expected 2027. No senior or agency tenure is claimed. Public source and verification
+            records are linked above so you can check the work yourself.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="index.html">Home</a></span>
+    </footer>
+  </div>
+</body>
+</html>
