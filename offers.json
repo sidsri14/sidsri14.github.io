@@ -1,0 +1,114 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Fixed-scope implementation offers",
+  "description": "Advertised fixed-scope offers only. These are not received income. Scope, acceptance checks and funded payment terms are agreed in writing before work starts.",
+  "url": "https://sidsri14.github.io/implementation-packages.html",
+  "seller": {
+    "@type": "Person",
+    "name": "Siddharth Srivastava",
+    "identifier": "sidsri14",
+    "description": "Independent AI-assisted developer; BCA student at Manipal University Jaipur, expected 2027; based in Lucknow, India. No senior, agency, tenure, audit or production-outage claims."
+  },
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Atomic token-budget reservation retrofit",
+      "description": "Add a Lua-backed reserve/settle path to a BullMQ worker, with mock-based unit tests, TypeScript build and truthful limits docs. Excludes live provider adapters, production deployment, Redis Cluster design, security audit and hard-spend-cap guarantees.",
+      "url": "https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit",
+      "offers": {
+        "@type": "Offer",
+        "price": "300",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit"
+      },
+      "proof": [
+        "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f"
+      ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Token-2022 starter CI and fee-math repair",
+      "description": "Repair pnpm workspace config, lockfiles, typecheck, rustfmt and deterministic basis-point fee helpers in a TypeScript/Rust starter. Excludes security audit, on-chain deployment, validator-backed integration tests and audited/production-ready claims.",
+      "url": "https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair",
+      "offers": {
+        "@type": "Offer",
+        "price": "150",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair"
+      },
+      "proof": [
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5",
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/actions/runs/45884741820"
+      ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Checkout Link Consistency Gate",
+      "description": "Add an offline CI check that fails when a static page advertises one product or price but its checkout button points to another. Excludes live provider verification, payment processing, entitlement/tax checks and unverified catalog truth claims.",
+      "url": "https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix",
+      "offers": {
+        "@type": "Offer",
+        "price": "100",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix"
+      },
+      "proof": [
+        "https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3",
+        "https://github.com/sidsri14/commit/45791ea2af57abfe418ae8943066261de1206c15"
+      ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Web3 starter CI green + deterministic test harness",
+      "description": "Reproduce one CI failure in a small TypeScript/Node or Rust web3 starter, add deterministic offline tests, wire push/PR CI and document scope limits. Excludes security audit, on-chain deployment, validator-backed integration tests and production-outage claims.",
+      "url": "https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness",
+      "offers": {
+        "@type": "Offer",
+        "price": "150",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness"
+      },
+      "alternateUrl": "https://contra.com/s/sAWPAWLs-web3-starter-ci-green-deterministic-test-harness?r=sid_sri_cqx6ygc6",
+      "proof": [
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5",
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/actions/runs/45884741820"
+      ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "name": "One bounded issue + regression test PR",
+      "description": "For one public no-signup repository: reproduce an agreed small issue locally, add a deterministic offline regression test, make a minimal patch, run public tests/CI where available and open a concise PR with handover. Excludes wallet, crypto, captcha, OTP, KYC, paid provider usage, audit, deployment and guaranteed merge.",
+      "url": "https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr",
+      "offers": {
+        "@type": "Offer",
+        "price": "75",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr"
+      },
+      "proof": [
+        "https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3",
+        "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f",
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5"
+      ]
+    }
+  ],
+  "lockedProofFigures": {
+    "mergedUpstreamPullRequests": 25,
+    "totalMergedGitHubPullRequests": 30,
+    "passingTestsAcrossOwnedRepos": 201,
+    "ownedReposWithPassingTests": 15,
+    "pendingHumanAttestation": 159,
+    "note": "159 is pending human attestation and is not used externally. Do not substitute uncited 203 or 227."
+  }
+}

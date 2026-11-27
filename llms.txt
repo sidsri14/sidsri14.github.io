@@ -1,0 +1,24 @@
+# Siddharth Srivastava fixed-scope implementation offers
+
+> Independent AI-assisted developer. BCA student at Manipal University Jaipur, expected 2027, based in Lucknow, India. No senior, agency, tenure, audit or production-outage claims.
+
+> All listed items are advertised offers only, not received income. Written scope, acceptance checks and funded payment terms are agreed before work starts.
+
+- [Five fixed-scope offers](https://sidsri14.github.io/implementation-packages.html): direct Contra service pages and no-signup Contra payment links.
+- [Machine-readable offer feed](https://sidsri14.github.io/offers.json): names, prices, checkout URLs, proof links and exclusions.
+- [Home and proof index](https://sidsri14.github.io/): projects, articles and verification page.
+
+## Offers
+
+- Atomic token-budget reservation retrofit — USD 300 fixed scope — https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit
+- Token-2022 starter CI and fee-math repair — USD 150 fixed scope — https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair
+- Checkout Link Consistency Gate — USD 100 fixed scope — https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix
+- Web3 starter CI green + deterministic test harness — USD 150 fixed scope — https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness
+- One bounded issue + regression test PR — USD 75 fixed scope — https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr
+
+## Proof boundaries
+
+- 25 merged upstream PRs / 30 total merged GitHub PRs.
+- 201 passing tests across 15 owned repositories; this is a reconstructible local figure, not a customer benchmark.
+- 159 tests remain pending human attestation and must not be cited externally.
+- No crypto, wallet, PayPal, GST, KYC, card-auth, paid upgrade or legal-checkbox handling is offered.
