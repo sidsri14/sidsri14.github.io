@@ -134,6 +134,25 @@
         "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f",
         "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5"
       ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "name": "One-repo security hygiene pass",
+      "description": "Bounded static review of one agreed repository you own or control: CI permissions, action and dependency pinning, exposed secrets, and any agent/MCP or tool manifest present. Deliver a findings table with evidence, one local reproducible check or regression script, corrected example configs and a short handover. Excludes penetration testing, exploitation, live production access, paid third-party scanners, identity/KYC, wallet/crypto, formal audit or senior/agency claims, and any guarantee of zero vulnerabilities. Written scope, acceptance checks, repo access and milestone payment terms are agreed before work starts; advertised service only, not received income.",
+      "url": "https://contra.com/payment-link/MMxTH8I0-one-repo-security-hygiene-pass",
+      "offers": {
+        "@type": "Offer",
+        "price": "150",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/payment-link/MMxTH8I0-one-repo-security-hygiene-pass"
+      },
+      "proof": [
+        "https://github.com/sidsri14/agentsec/commit/7662063",
+        "https://github.com/sidsri14/toolshield/commit/24f27d9",
+        "https://github.com/sidsri14/mcpguard/commit/37194eb"
+      ]
     }
   ],
   "digitalProducts": [

@@ -18,7 +18,7 @@ for (const file of files) {
 }
 
 const feed = JSON.parse(fs.readFileSync("offers.json", "utf8"));
-if (feed.itemListElement.length !== 6) throw new Error("offer count is not 6");
+if (feed.itemListElement.length !== 7) throw new Error("offer count is not 7");
 if (feed.requestUrl !== "https://sidsri14.github.io/request-work.html") {
   throw new Error("offer feed does not declare the request URL");
 }
@@ -71,6 +71,7 @@ const PAYMENT_LINKS = [
   "https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq",
   "https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair",
   "https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos",
+  "https://contra.com/payment-link/MMxTH8I0-one-repo-security-hygiene-pass",
 ];
 for (const url of PAYMENT_LINKS) {
   if (!html.includes(url)) throw new Error(`storefront missing payment link: ${url}`);
@@ -84,6 +85,9 @@ if (product.offers.price !== "29" || product.offers.priceCurrency !== "USD") {
   throw new Error("digital product price is not the advertised USD 29");
 }
 const indexHtml = fs.readFileSync("index.html", "utf8");
+if (!indexHtml.includes(PAYMENT_LINKS[6])) {
+  throw new Error("index.html missing one-repo security hygiene payment link");
+}
 for (const url of [product.url, product.offers.url]) {
   if (!url.startsWith("https://contra.com/")) throw new Error(`bad digital product URL: ${url}`);
   if (!llms.includes(url)) throw new Error(`llms.txt missing digital product URL: ${url}`);
@@ -137,4 +141,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 6 offers, 6 direct payment links, 1 purchasable digital product with direct checkout, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 7 offers, 7 direct payment links, 1 purchasable digital product with direct checkout, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");

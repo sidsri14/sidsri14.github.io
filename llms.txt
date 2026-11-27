@@ -4,7 +4,7 @@
 
 > All listed items are advertised offers only, not received income. Written scope, acceptance checks and funded payment terms are agreed before work starts.
 
-- [Six fixed-scope offers](https://sidsri14.github.io/implementation-packages.html): direct Contra service pages and no-signup Contra payment links.
+- [Seven fixed-scope offers](https://sidsri14.github.io/implementation-packages.html): direct Contra service pages and no-signup Contra payment links.
 - [Machine-readable offer feed](https://sidsri14.github.io/offers.json): names, prices, checkout URLs, proof links and exclusions.
 - [No-signup request form](https://sidsri14.github.io/request-work.html): opens an email in the buyer's own mail client; no account, fee, card, wallet or third-party submission.
 - [Free browser-only checkout link checker](https://sidsri14.github.io/checkout-audit.html): private, client-side tool that finds product/price mismatches between static cards and their checkout links; no upload, account, form endpoint, card or wallet.
@@ -25,6 +25,7 @@
   - Searchable Contra service: https://contra.com/s/3Z6ePrLW-extend-open-source-one-bounded-issue-regression-test-pr
 - Multi-repo CI reliability sprint - up to 5 repos — USD 5000 fixed scope (agreed first milestone only) — https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos
   - Searchable Contra service: https://contra.com/s/UcXLRcRB-multi-repo-ci-reliability-sprint-up-to-5-repos
+- One-repo security hygiene pass — USD 150 fixed scope — direct no-signup payment link: https://contra.com/payment-link/MMxTH8I0-one-repo-security-hygiene-pass
 
 ## Digital product (immediate download)
 
