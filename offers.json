@@ -6,6 +6,7 @@
   "url": "https://sidsri14.github.io/implementation-packages.html",
   "requestUrl": "https://sidsri14.github.io/request-work.html",
   "freeToolUrl": "https://sidsri14.github.io/checkout-audit.html",
+  "feeCalculatorUrl": "https://sidsri14.github.io/fee-math-calculator.html",
   "contact": {
     "@type": "ContactPoint",
     "email": "sidsri1502@gmail.com",
@@ -50,6 +51,7 @@
         "availability": "https://schema.org/InStock",
         "url": "https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair"
       },
+      "alternateUrl": "https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair",
       "proof": [
         "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5",
         "https://github.com/sidsri14/solana-anchor-token2022-starter/actions/runs/45884741820"

@@ -8,6 +8,7 @@
 - [Machine-readable offer feed](https://sidsri14.github.io/offers.json): names, prices, checkout URLs, proof links and exclusions.
 - [No-signup request form](https://sidsri14.github.io/request-work.html): opens an email in the buyer's own mail client; no account, fee, card, wallet or third-party submission.
 - [Free browser-only checkout link checker](https://sidsri14.github.io/checkout-audit.html): private, client-side tool that finds product/price mismatches between static cards and their checkout links; no upload, account, form endpoint, card or wallet.
+- [Free browser-only basis-point fee calculator](https://sidsri14.github.io/fee-math-calculator.html): deterministic integer-cent, half-up fee and net calculation; no upload, account, form endpoint, card or wallet.
 - [Home and proof index](https://sidsri14.github.io/): projects, articles and verification page.
 
 ## Offers
@@ -15,6 +16,7 @@
 - Atomic token-budget reservation retrofit — USD 300 fixed scope — https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit
   - Direct no-signup payment link: https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq
 - Token-2022 starter CI and fee-math repair — USD 150 fixed scope — https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair
+  - Direct no-signup payment link: https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair
 - Checkout Link Consistency Gate — USD 100 fixed scope — https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix
   - Direct no-signup payment link: https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix
 - Web3 starter CI green + deterministic test harness — USD 150 fixed scope — https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness

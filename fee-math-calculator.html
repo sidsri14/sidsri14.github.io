@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Free basis-point fee calculator (offline)</title>
+  <meta name="description" content="A free, browser-only basis-point fee calculator with deterministic half-up cent rounding. No account, upload, card, wallet or form endpoint. Need deterministic fee helpers wired into a starter repo with green CI? A fixed-scope repair package is available." />
+  <link rel="canonical" href="https://sidsri14.github.io/fee-math-calculator.html" />
+  <link rel="alternate" type="application/json" href="offers.json" />
+  <link rel="alternate" type="text/plain" href="llms.txt" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">Siddharth Srivastava (@sidsri14)</div>
+      <nav class="nav-links">
+        <a href="index.html#services">Paid Services</a>
+        <a href="index.html#kits">Starter Kits</a>
+        <a href="index.html#proof">Selected Projects</a>
+        <a href="implementation-packages.html">Shipped Fixes</a>
+        <a href="checkout-audit.html">Free Checker</a>
+        <a href="fee-math-calculator.html">Fee Calculator</a>
+        <a href="request-work.html">Request Work</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pill">FREE · BROWSER-ONLY · NO SIGNUP</div>
+      <h1>Basis-point fee calculator</h1>
+      <p>
+        Convert a fee expressed in basis points into cents and a net amount, with deterministic half-up rounding.
+        Everything runs locally in your browser: no upload, no third-party request, no account, card, wallet or
+        form endpoint.
+      </p>
+      <p class="section-sub">
+        100 basis points = 1%. For example, 250 bps on USD 100.00 is USD 2.50, leaving USD 97.50.
+      </p>
+    </section>
+
+    <section>
+      <h2>Calculate</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Inputs</h3>
+          <p class="section-sub">Amount in USD, fee in basis points, optional fixed fee in USD.</p>
+          <p><label for="amountInput">Amount (USD)</label></p>
+          <input id="amountInput" type="number" min="0" step="0.01" value="100.00" />
+          <p><label for="bpsInput">Fee (basis points)</label></p>
+          <input id="bpsInput" type="number" min="0" step="1" value="250" />
+          <p><label for="fixedInput">Fixed fee (USD)</label></p>
+          <input id="fixedInput" type="number" min="0" step="0.01" value="0.00" />
+          <div class="cta-row">
+            <button class="btn btn-primary" id="calcBtn" type="button">Calculate</button>
+            <button class="btn btn-secondary" id="clearBtn" type="button">Clear</button>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Result</h3>
+          <p id="result" class="section-sub">Enter values and click Calculate.</p>
+          <div id="details"></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Need deterministic fee helpers in your repo?</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="card-tag">Fixed-scope repair · USD 150</div>
+          <h3>Token-2022 starter CI and fee-math repair</h3>
+          <p>
+            Repair a TypeScript/Rust starter so CI runs on the live branch, and add deterministic basis-point fee
+            helpers with offline tests. Source:
+            <a href="https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5" target="_blank" rel="noopener">commit d24e5e5</a>
+            and a successful CI run. This is an advertised offer, not received income. Written scope, acceptance
+            checks and funded payment terms are agreed before work starts.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair" target="_blank" rel="noopener">Pay on Contra — no signup</a>
+            <a class="btn btn-secondary" href="https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair" target="_blank" rel="noopener">See the searchable service</a>
+            <a class="btn btn-secondary" href="request-work.html">Send a scoped request by email</a>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Limits and disclosure</h3>
+          <p>
+            This calculator performs offline integer-cent arithmetic only. It does not quote a real provider's
+            fee, verify on-chain behaviour, process a payment, or check entitlement and tax rules. No card,
+            wallet, PayPal, KYC, captcha or legal gate is used here.
+          </p>
+          <p>
+            Independent, AI-assisted developer based in Lucknow, India. BCA student at Manipal University Jaipur,
+            expected 2027. No senior, agency, tenure, audit or production-outage claim. Locked public proof:
+            25 merged upstream PRs / 30 merged GitHub PRs total and 201 passing tests across 15 owned repositories.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="request-work.html">Request Work</a> • <a href="index.html">Home</a></span>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var amountInput = document.getElementById("amountInput");
+    var bpsInput = document.getElementById("bpsInput");
+    var fixedInput = document.getElementById("fixedInput");
+    var result = document.getElementById("result");
+    var details = document.getElementById("details");
+
+    function toCents(value) {
+      var n = Number(value);
+      if (!Number.isFinite(n) || n < 0) throw new Error("enter a non-negative number");
+      return Math.round(n * 100);
+    }
+
+    function usd(cents) {
+      return "USD " + (cents / 100).toFixed(2);
+    }
+
+    function addDetail(label, value) {
+      var p = document.createElement("p");
+      p.className = "section-sub";
+      p.textContent = label + ": " + value;
+      details.appendChild(p);
+    }
+
+    document.getElementById("calcBtn").addEventListener("click", function () {
+      details.textContent = "";
+      var amountCents, bps, fixedCents;
+      try {
+        amountCents = toCents(amountInput.value);
+        fixedCents = toCents(fixedInput.value);
+        bps = Number(bpsInput.value);
+        if (!Number.isInteger(bps) || bps < 0) throw new Error("basis points must be a non-negative integer");
+      } catch (e) {
+        result.textContent = "Input error: " + e.message;
+        return;
+      }
+      var bpsCents = Math.floor((amountCents * bps + 5000) / 10000);
+      var totalFeeCents = bpsCents + fixedCents;
+      var netCents = amountCents - totalFeeCents;
+      if (netCents < 0) {
+        result.textContent = "Fee exceeds amount: " + usd(totalFeeCents) + " fee on " + usd(amountCents) + ".";
+        return;
+      }
+      result.textContent = "Fee " + usd(totalFeeCents) + " · Net " + usd(netCents);
+      addDetail("Amount", usd(amountCents));
+      addDetail("Basis points", bps + " bps (" + (bps / 100).toFixed(2) + "%)");
+      addDetail("Basis-point fee (half-up to cents)", usd(bpsCents));
+      addDetail("Fixed fee", usd(fixedCents));
+      addDetail("Rounding rule", "integer cents, half-up");
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", function () {
+      amountInput.value = "";
+      bpsInput.value = "";
+      fixedInput.value = "";
+      result.textContent = "Enter values and click Calculate.";
+      details.textContent = "";
+    });
+  }());
+  </script>
+</body>
+</html>

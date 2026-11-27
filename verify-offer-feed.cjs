@@ -6,6 +6,7 @@ const files = [
   "implementation-packages.html",
   "request-work.html",
   "checkout-audit.html",
+  "fee-math-calculator.html",
   "sitemap.xml",
 ];
 for (const file of files) {
@@ -27,6 +28,10 @@ const FREE_TOOL = "https://sidsri14.github.io/checkout-audit.html";
 if (feed.freeToolUrl !== FREE_TOOL) {
   throw new Error("offer feed does not declare the free checker URL");
 }
+const FEE_TOOL = "https://sidsri14.github.io/fee-math-calculator.html";
+if (feed.feeCalculatorUrl !== FEE_TOOL) {
+  throw new Error("offer feed does not declare the free fee calculator URL");
+}
 const urls = feed.itemListElement.map(item => item.offers.url);
 for (const url of urls) {
   if (!url.startsWith("https://contra.com/")) throw new Error(`bad URL: ${url}`);
@@ -39,14 +44,15 @@ for (const url of alternateUrls) {
 }
 
 const llms = fs.readFileSync("llms.txt", "utf8");
-for (const url of [...urls, ...alternateUrls, feed.requestUrl, FREE_TOOL]) {
+for (const url of [...urls, ...alternateUrls, feed.requestUrl, FREE_TOOL, FEE_TOOL]) {
   if (!llms.includes(url)) throw new Error(`llms.txt missing: ${url}`);
 }
 
 const html = fs.readFileSync("implementation-packages.html", "utf8");
 if (!html.includes("offers.json") || !html.includes("llms.txt") ||
-    !html.includes("request-work.html") || !html.includes("checkout-audit.html")) {
-  throw new Error("storefront does not link the feed, request page and free checker");
+    !html.includes("request-work.html") || !html.includes("checkout-audit.html") ||
+    !html.includes("fee-math-calculator.html")) {
+  throw new Error("storefront does not link the feed, request page and free tools");
 }
 
 const request = fs.readFileSync("request-work.html", "utf8");
@@ -62,6 +68,7 @@ const PAYMENT_LINKS = [
   "https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr",
   "https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix",
   "https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq",
+  "https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair",
 ];
 for (const url of PAYMENT_LINKS) {
   if (!html.includes(url)) throw new Error(`storefront missing payment link: ${url}`);
@@ -86,8 +93,23 @@ for (const gate of ["wallet", "captcha", "KYC"]) {
   if (!checker.includes(gate)) throw new Error(`free checker omits gate disclosure: ${gate}`);
 }
 
+const feeTool = fs.readFileSync("fee-math-calculator.html", "utf8");
+if (!feeTool.includes("half-up") || !feeTool.includes("basis points")) {
+  throw new Error("free fee calculator does not state its rounding rule");
+}
+if (!feeTool.includes(PAYMENT_LINKS[4])) {
+  throw new Error("free fee calculator does not link its direct payment path");
+}
+if (/<script[^>]+src=/.test(feeTool) || /<form[^>]+action=/.test(feeTool) ||
+    /\bfetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/.test(feeTool)) {
+  throw new Error("free fee calculator makes a network request or uses a form endpoint");
+}
+for (const gate of ["wallet", "captcha", "KYC"]) {
+  if (!feeTool.includes(gate)) throw new Error(`free fee calculator omits gate disclosure: ${gate}`);
+}
+
 const sitemap = fs.readFileSync("sitemap.xml", "utf8");
-for (const url of ["offers.json", "llms.txt", "request-work.html", "checkout-audit.html"]) {
+for (const url of ["offers.json", "llms.txt", "request-work.html", "checkout-audit.html", "fee-math-calculator.html"]) {
   if (!sitemap.includes(url)) throw new Error(`sitemap does not include: ${url}`);
 }
 
@@ -99,4 +121,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 5 offers, 4 direct payment links, free browser-only checker, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 5 offers, 5 direct payment links, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
