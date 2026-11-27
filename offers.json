@@ -5,6 +5,7 @@
   "description": "Advertised fixed-scope offers only. These are not received income. Scope, acceptance checks and funded payment terms are agreed in writing before work starts.",
   "url": "https://sidsri14.github.io/implementation-packages.html",
   "requestUrl": "https://sidsri14.github.io/request-work.html",
+  "freeToolUrl": "https://sidsri14.github.io/checkout-audit.html",
   "contact": {
     "@type": "ContactPoint",
     "email": "sidsri1502@gmail.com",

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Free Checkout Link Consistency Checker</title>
+  <meta name="description" content="A free, private, browser-only checker that finds static pages advertising one product or price while their checkout button points to another. No account, upload, card, wallet or form endpoint. Need it enforced in CI? A fixed-scope setup package is available." />
+  <link rel="canonical" href="https://sidsri14.github.io/checkout-audit.html" />
+  <link rel="alternate" type="application/json" href="offers.json" />
+  <link rel="alternate" type="text/plain" href="llms.txt" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">Siddharth Srivastava (@sidsri14)</div>
+      <nav class="nav-links">
+        <a href="index.html#services">Paid Services</a>
+        <a href="index.html#kits">Starter Kits</a>
+        <a href="index.html#proof">Selected Projects</a>
+        <a href="implementation-packages.html">Shipped Fixes</a>
+        <a href="checkout-audit.html">Free Checker</a>
+        <a href="request-work.html">Request Work</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pill">FREE · BROWSER-ONLY · NO SIGNUP</div>
+      <h1>Checkout link consistency checker</h1>
+      <p>
+        Paste a static page and a product catalog. This tool finds cards whose checkout button points to a
+        different product or price than the card advertises. Everything runs locally in your browser: no upload,
+        no third-party request, no account, card, wallet or form endpoint.
+      </p>
+      <p class="section-sub">
+        Based on a real defect: a storefront card advertised USD 79 for one product while its button opened a
+        USD 39 checkout for a different one. The offline checker is open source and has six passing tests.
+      </p>
+    </section>
+
+    <section>
+      <h2>Run a check</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>1. Page HTML</h3>
+          <p class="section-sub"><code>&lt;article&gt;</code> cards with a heading, an advertised price and links.</p>
+          <textarea id="htmlInput" rows="14" spellcheck="false" aria-label="Page HTML"></textarea>
+        </article>
+        <article class="card">
+          <h3>2. Product catalog (JSON)</h3>
+          <p class="section-sub">Map each checkout URL to its real product name and USD price.</p>
+          <textarea id="catalogInput" rows="14" spellcheck="false" aria-label="Product catalog JSON"></textarea>
+        </article>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-primary" id="runBtn" type="button">Run consistency check</button>
+        <button class="btn btn-secondary" id="sampleBtn" type="button">Load the real defect example</button>
+        <button class="btn btn-secondary" id="clearBtn" type="button">Clear</button>
+      </div>
+      <article class="card" style="margin-top:1rem">
+        <h3>Result</h3>
+        <p id="summary" class="section-sub">Load the example and run the check to see a finding.</p>
+        <div id="findings"></div>
+      </article>
+    </section>
+
+    <section>
+      <h2>Need this enforced in CI?</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="card-tag">Fixed-scope setup · USD 100</div>
+          <h3>Checkout Link Consistency Gate</h3>
+          <p>
+            Configure the catalog, wire the offline check into your CI, and add fixtures for your exact regression
+            so the mistake cannot silently return. Source:
+            <a href="https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3" target="_blank" rel="noopener">commit 9eaa2b3</a>
+            and six passing tests. This is an advertised offer, not received income. Written scope, acceptance
+            checks and funded payment terms are agreed before work starts.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix" target="_blank" rel="noopener">Order on Contra — no signup</a>
+            <a class="btn btn-secondary" href="request-work.html">Send a scoped request by email</a>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Limits and disclosure</h3>
+          <p>
+            The checker is offline and static: it does not contact payment providers, process payments, verify a
+            catalog is truthful without human review, or check entitlement and tax rules. No card, wallet, PayPal,
+            KYC, captcha or legal gate is used here.
+          </p>
+          <p>
+            Independent, AI-assisted developer based in Lucknow, India. BCA student at Manipal University Jaipur,
+            expected 2027. No senior, agency, tenure, audit or production-outage claim. Locked public proof:
+            25 merged upstream PRs / 30 merged GitHub PRs total and 201 passing tests across 15 owned repositories.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="request-work.html">Request Work</a> • <a href="index.html">Home</a></span>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var CARD_SOURCE = '<article\\b[^>]*>[\\s\\S]*?<\\/article>';
+    var HEADING_SOURCE = '<h[1-6]\\b[^>]*>([\\s\\S]*?)<\\/h[1-6]>';
+    var HREF_SOURCE = '\\shref\\s*=\\s*(["\'])(.*?)\\1';
+    var PRICE_SOURCE = '(?:\\$\\s*|USD\\s*)(\\d+(?:\\.\\d{1,2})?)';
+    var NON_NAVIGATION = /^(mailto:|tel:|javascript:|#)/i;
+
+    function decodeEntities(value) {
+      return String(value == null ? "" : value)
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;|&apos;/g, "'")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&nbsp;/g, " ");
+    }
+
+    function textContent(value) {
+      return decodeEntities(String(value == null ? "" : value).replace(/<[^>]+>/g, " "))
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizeText(value) {
+      return textContent(value).toLocaleLowerCase("en-US");
+    }
+
+    function urlKey(value) {
+      var raw = decodeEntities(value).trim();
+      if (!raw || NON_NAVIGATION.test(raw)) return raw;
+      try {
+        var parsed = new URL(raw);
+        var host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+        var path = parsed.pathname.replace(/\/+$/, "");
+        return host + path + parsed.search;
+      } catch (e) {
+        return raw.replace(/\/+$/, "");
+      }
+    }
+
+    function normalizeCatalog(catalog) {
+      if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) {
+        throw new Error("catalog must be a JSON object");
+      }
+      var checkouts = new Map();
+      var entries = catalog.checkouts || {};
+      if (!entries || typeof entries !== "object" || Array.isArray(entries)) {
+        throw new Error("catalog.checkouts must be an object");
+      }
+      Object.keys(entries).forEach(function (href) {
+        var entry = entries[href];
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+          throw new Error("catalog entry for " + href + " must be an object");
+        }
+        checkouts.set(urlKey(href), {
+          product: String(entry.product == null ? "" : entry.product),
+          priceUsd: Number(entry.priceUsd == null ? entry.price : entry.priceUsd)
+        });
+      });
+      var hosts = new Set(
+        (Array.isArray(catalog.checkoutHosts) ? catalog.checkoutHosts : [])
+          .map(function (h) { return String(h).toLowerCase().replace(/^www\./, ""); })
+      );
+      return { checkouts: checkouts, hosts: hosts };
+    }
+
+    function isCheckoutLike(href, checkouts, hosts) {
+      var key = urlKey(href);
+      if (!key || NON_NAVIGATION.test(key)) return false;
+      if (checkouts.has(key)) return true;
+      try {
+        return hosts.has(new URL(href).hostname.toLowerCase().replace(/^www\./, ""));
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function extractTitle(card) {
+      var m = card.match(new RegExp(HEADING_SOURCE, "i"));
+      return m ? textContent(m[1]) : "";
+    }
+
+    function extractPrices(card) {
+      var prices = new Set();
+      var re = new RegExp(PRICE_SOURCE, "gi");
+      var m;
+      while ((m = re.exec(card)) !== null) {
+        var amount = Number(m[1].replace(",", "."));
+        if (Number.isFinite(amount)) prices.add(amount);
+      }
+      return Array.from(prices).sort(function (a, b) { return a - b; });
+    }
+
+    function finding(severity, code, message, details) {
+      details = details || {};
+      return {
+        severity: severity,
+        code: code,
+        message: message,
+        card: details.card == null ? null : details.card,
+        href: details.href == null ? null : details.href,
+        expected: details.expected == null ? null : details.expected,
+        found: details.found == null ? null : details.found
+      };
+    }
+
+    function auditHtml(html, catalog) {
+      var normalized = normalizeCatalog(catalog);
+      var source = String(html == null ? "" : html);
+      var cards = source.match(new RegExp(CARD_SOURCE, "gi")) || [];
+      var findings = [];
+      var scanned = 0;
+      if (cards.length === 0) {
+        findings.push(finding("error", "NO_CARDS", "No <article> cards were found in the HTML."));
+      }
+      cards.forEach(function (card, index) {
+        var cardName = extractTitle(card) || "card #" + (index + 1);
+        var title = normalizeText(cardName);
+        var prices = extractPrices(card);
+        var hrefs = [];
+        var hrefRe = new RegExp(HREF_SOURCE, "gi");
+        var hm;
+        while ((hm = hrefRe.exec(card)) !== null) hrefs.push(decodeEntities(hm[2]).trim());
+        var checkoutHrefs = hrefs.filter(function (href) {
+          return isCheckoutLike(href, normalized.checkouts, normalized.hosts);
+        });
+        if (checkoutHrefs.length === 0) return;
+        scanned += checkoutHrefs.length;
+        if (prices.length === 0) {
+          findings.push(finding("error", "MISSING_PRICE_FOR_CHECKOUT",
+            "A checkout link was found but the card has no advertised price.",
+            { card: cardName, href: checkoutHrefs[0] }));
+          return;
+        }
+        checkoutHrefs.forEach(function (href) {
+          var entry = normalized.checkouts.get(urlKey(href));
+          if (!entry) {
+            findings.push(finding("error", "UNCATALOGUED_CHECKOUT",
+              "The checkout host is not present in the product catalog.",
+              { card: cardName, href: href, expected: "catalog entry" }));
+            return;
+          }
+          var product = normalizeText(entry.product);
+          if (product && !(title.indexOf(product) !== -1 || product.indexOf(title) !== -1)) {
+            findings.push(finding("error", "PRODUCT_MISMATCH",
+              "The checkout link belongs to a different product than the card title.",
+              { card: cardName, href: href, expected: entry.product, found: cardName }));
+          }
+          if (!Number.isFinite(entry.priceUsd)) {
+            findings.push(finding("error", "INVALID_CATALOG_PRICE",
+              "The catalog entry has no numeric priceUsd.",
+              { card: cardName, href: href, expected: "numeric priceUsd", found: entry.priceUsd }));
+          } else if (!prices.some(function (p) { return Math.abs(p - entry.priceUsd) < 0.005; })) {
+            findings.push(finding("error", "PRICE_MISMATCH",
+              "The advertised card price does not match the catalog price for this checkout link.",
+              { card: cardName, href: href, expected: entry.priceUsd, found: prices }));
+          }
+        });
+      });
+      return { findings: findings, cardsScanned: cards.length, checkoutLinksScanned: scanned };
+    }
+
+    var htmlInput = document.getElementById("htmlInput");
+    var catalogInput = document.getElementById("catalogInput");
+    var summary = document.getElementById("summary");
+    var findingsBox = document.getElementById("findings");
+
+    var SAMPLE_HTML = [
+      '<article>',
+      '  <h3>InvoiceFlow — API workflow starter</h3>',
+      '  <p>USD 79 fixed scope</p>',
+      '  <a href="https://polar.sh/checkout/resilient-ai-worker-kit">Buy InvoiceFlow</a>',
+      '</article>'
+    ].join("\n");
+
+    var SAMPLE_CATALOG = JSON.stringify({
+      checkoutHosts: ["polar.sh"],
+      checkouts: {
+        "https://polar.sh/checkout/resilient-ai-worker-kit": {
+          product: "Resilient AI Worker Kit",
+          priceUsd: 39
+        }
+      }
+    }, null, 2);
+
+    function addLine(label, value) {
+      var p = document.createElement("p");
+      p.className = "section-sub";
+      p.textContent = label + ": " + value;
+      findingsBox.appendChild(p);
+    }
+
+    document.getElementById("sampleBtn").addEventListener("click", function () {
+      htmlInput.value = SAMPLE_HTML;
+      catalogInput.value = SAMPLE_CATALOG;
+      summary.textContent = "Example loaded. Click 'Run consistency check'.";
+      findingsBox.textContent = "";
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", function () {
+      htmlInput.value = "";
+      catalogInput.value = "";
+      summary.textContent = "Load the example and run the check to see a finding.";
+      findingsBox.textContent = "";
+    });
+
+    document.getElementById("runBtn").addEventListener("click", function () {
+      findingsBox.textContent = "";
+      var catalog;
+      try {
+        catalog = JSON.parse(catalogInput.value);
+      } catch (e) {
+        summary.textContent = "Catalog error: " + e.message;
+        return;
+      }
+      var result;
+      try {
+        result = auditHtml(htmlInput.value, catalog);
+      } catch (e) {
+        summary.textContent = "Catalog error: " + e.message;
+        return;
+      }
+      var errors = result.findings.filter(function (f) { return f.severity === "error"; });
+      summary.textContent = errors.length === 0
+        ? "PASS: no product or price mismatch found in " + result.cardsScanned +
+          " card(s) and " + result.checkoutLinksScanned + " checkout link(s)."
+        : "FAIL: " + errors.length + " finding(s) in " + result.cardsScanned +
+          " card(s) and " + result.checkoutLinksScanned + " checkout link(s).";
+      result.findings.forEach(function (f) {
+        var box = document.createElement("article");
+        box.className = "card";
+        var h = document.createElement("h3");
+        h.textContent = f.code;
+        box.appendChild(h);
+        addLine("Card", f.card || "(unknown)");
+        if (f.href) addLine("Checkout", f.href);
+        if (f.expected !== null) addLine("Expected", JSON.stringify(f.expected));
+        if (f.found !== null) addLine("Found", JSON.stringify(f.found));
+        var p = document.createElement("p");
+        p.textContent = f.message;
+        box.appendChild(p);
+        findingsBox.appendChild(box);
+      });
+    });
+
+    htmlInput.value = SAMPLE_HTML;
+    catalogInput.value = SAMPLE_CATALOG;
+  }());
+  </script>
+</body>
+</html>
