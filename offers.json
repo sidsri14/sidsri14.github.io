@@ -114,6 +114,26 @@
         "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f",
         "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5"
       ]
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "name": "Multi-repo CI reliability sprint - up to 5 repos",
+      "description": "Assess up to five owned repositories, repair failing lint, typecheck and test jobs, add deterministic regression coverage and hand over a short note with truthful remaining limits. Excludes production deployment, security audit, incident response, live provider integrations, senior or agency staffing and any guarantee of zero future failures. Written scope, acceptance checks, milestone payment terms and repo access are agreed before work begins; this is an advertised fixed-scope offer, not received income.",
+      "url": "https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos",
+      "offers": {
+        "@type": "Offer",
+        "price": "5000",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos"
+      },
+      "alternateUrl": "https://contra.com/s/UcXLRcRB-multi-repo-ci-reliability-sprint-up-to-5-repos",
+      "proof": [
+        "https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3",
+        "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f",
+        "https://github.com/sidsri14/solana-anchor-token2022-starter/commit/d24e5e5"
+      ]
     }
   ],
   "lockedProofFigures": {

@@ -17,7 +17,7 @@ for (const file of files) {
 }
 
 const feed = JSON.parse(fs.readFileSync("offers.json", "utf8"));
-if (feed.itemListElement.length !== 5) throw new Error("offer count is not 5");
+if (feed.itemListElement.length !== 6) throw new Error("offer count is not 6");
 if (feed.requestUrl !== "https://sidsri14.github.io/request-work.html") {
   throw new Error("offer feed does not declare the request URL");
 }
@@ -69,6 +69,7 @@ const PAYMENT_LINKS = [
   "https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix",
   "https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq",
   "https://contra.com/payment-link/emMQcx5Z-token-2022-starter-ci-and-fee-math-repair",
+  "https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos",
 ];
 for (const url of PAYMENT_LINKS) {
   if (!html.includes(url)) throw new Error(`storefront missing payment link: ${url}`);
@@ -121,4 +122,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 5 offers, 5 direct payment links, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 6 offers, 6 direct payment links, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
