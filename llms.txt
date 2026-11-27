@@ -6,6 +6,7 @@
 
 - [Five fixed-scope offers](https://sidsri14.github.io/implementation-packages.html): direct Contra service pages and no-signup Contra payment links.
 - [Machine-readable offer feed](https://sidsri14.github.io/offers.json): names, prices, checkout URLs, proof links and exclusions.
+- [No-signup request form](https://sidsri14.github.io/request-work.html): opens an email in the buyer's own mail client; no account, fee, card, wallet or third-party submission.
 - [Home and proof index](https://sidsri14.github.io/): projects, articles and verification page.
 
 ## Offers

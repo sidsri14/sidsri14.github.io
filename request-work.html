@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Request a fixed-scope implementation — Siddharth Srivastava</title>
+  <meta name="description" content="A no-signup, no-fee email request form for fixed-scope Rust, TypeScript, Node.js, and CI implementation work. Scope and payment terms are agreed before work starts." />
+  <link rel="canonical" href="https://sidsri14.github.io/request-work.html" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">Siddharth Srivastava (@sidsri14)</div>
+      <nav class="nav-links">
+        <a href="index.html#services">Paid Services</a>
+        <a href="implementation-packages.html">Shipped Fixes</a>
+        <a href="offers.json">Offer Feed</a>
+        <a href="request-work.html">Request Work</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pill">NO SIGNUP · NO FEE · DIRECT EMAIL</div>
+      <h1>Send a bounded implementation request</h1>
+      <p>
+        This form only opens an email in your own mail client. It does not create an account, charge a card,
+        ask for wallet access, or send data to a third party. Work starts only after a written scope,
+        acceptance checks, and funded payment terms are agreed.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-secondary" href="implementation-packages.html">See the five fixed-scope offers</a>
+        <a class="btn btn-secondary" href="offers.json">Read the machine-readable offer feed</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Request details</h2>
+      <p class="section-sub">The more precise the acceptance checks, the faster I can say whether this is a truthful fit.</p>
+      <form id="request-form">
+        <p>
+          <label for="package">Package of interest</label><br />
+          <select id="package" name="package">
+            <option value="Atomic token-budget reservation retrofit — USD 300">Atomic token-budget reservation retrofit — USD 300</option>
+            <option value="Token-2022 starter CI and fee-math repair — USD 150">Token-2022 starter CI and fee-math repair — USD 150</option>
+            <option value="Checkout Link Consistency Gate — USD 100">Checkout Link Consistency Gate — USD 100</option>
+            <option value="Web3 starter CI green + deterministic test harness — USD 150">Web3 starter CI green + deterministic test harness — USD 150</option>
+            <option value="One bounded issue + regression test PR — USD 75">One bounded issue + regression test PR — USD 75</option>
+            <option value="Custom bounded implementation — quote after written scope">Custom bounded implementation — quote after written scope</option>
+          </select>
+        </p>
+        <p>
+          <label for="repo">Public repository or URL (optional)</label><br />
+          <input id="repo" name="repo" type="url" placeholder="https://github.com/owner/repo" size="52" />
+        </p>
+        <p>
+          <label for="problem">Problem or desired change (required)</label><br />
+          <textarea id="problem" name="problem" rows="5" cols="70" required></textarea>
+        </p>
+        <p>
+          <label for="acceptance">Acceptance checks (required)</label><br />
+          <textarea id="acceptance" name="acceptance" rows="5" cols="70" placeholder="Commands that must pass, files that must change, and what should remain unchanged" required></textarea>
+        </p>
+        <p>
+          <label for="constraints">Constraints and exclusions (optional)</label><br />
+          <textarea id="constraints" name="constraints" rows="4" cols="70" placeholder="No deploy, no audit, no wallet, no paid provider usage, no private data"></textarea>
+        </p>
+        <p>
+          <label for="budget">Budget range (optional)</label><br />
+          <input id="budget" name="budget" type="text" size="52" placeholder="USD 75–300 fixed scope, or your range" />
+        </p>
+        <p>
+          <label for="timeline">Timeline (optional)</label><br />
+          <input id="timeline" name="timeline" type="text" size="52" placeholder="e.g. within 1 week of written agreement" />
+        </p>
+        <p>
+          <label for="from">Your email address (required)</label><br />
+          <input id="from" name="from" type="email" size="52" required />
+        </p>
+        <p>
+          <button class="btn btn-primary" type="submit">Open email with this request</button>
+        </p>
+      </form>
+      <p>
+        If the button does not open your mail client, email
+        <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> with the same details.
+      </p>
+      <p>
+        <strong>Disclosure:</strong> Independent AI-assisted developer; BCA student at Manipal University Jaipur,
+        expected 2027; based in Lucknow, India. No senior, agency, tenure, audit, or production-outage claim.
+        No wallet, crypto, PayPal, GST, KYC, card-auth, paid upgrade, or legal-checkbox handling.
+      </p>
+    </section>
+
+    <footer>
+      <span>© 2026 Siddharth Srivastava • Backend, Rust, Solana &amp; AI Infrastructure</span>
+      <span>Contact: <a href="mailto:sidsri1502@gmail.com">sidsri1502@gmail.com</a> • <a href="implementation-packages.html">Shipped Fixes</a> • <a href="index.html">Home</a></span>
+    </footer>
+  </div>
+  <script>
+    document.getElementById("request-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var form = event.currentTarget;
+      var value = function (id) { return document.getElementById(id).value.trim(); };
+      var subject = "Fixed-scope request: " + value("package");
+      var body = [
+        "Package: " + value("package"),
+        "Public repository/URL: " + (value("repo") || "not provided"),
+        "Your email: " + value("from"),
+        "",
+        "Problem or desired change:",
+        value("problem"),
+        "",
+        "Acceptance checks:",
+        value("acceptance"),
+        "",
+        "Constraints and exclusions:",
+        value("constraints") || "none specified",
+        "",
+        "Budget range: " + (value("budget") || "not provided"),
+        "Timeline: " + (value("timeline") || "not provided"),
+        "",
+        "I understand that scope, acceptance checks and funded payment terms must be agreed in writing before work starts."
+      ].join("\n");
+      window.location.href = "mailto:sidsri1502@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    });
+  </script>
+</body>
+</html>

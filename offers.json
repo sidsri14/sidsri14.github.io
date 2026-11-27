@@ -4,6 +4,13 @@
   "name": "Fixed-scope implementation offers",
   "description": "Advertised fixed-scope offers only. These are not received income. Scope, acceptance checks and funded payment terms are agreed in writing before work starts.",
   "url": "https://sidsri14.github.io/implementation-packages.html",
+  "requestUrl": "https://sidsri14.github.io/request-work.html",
+  "contact": {
+    "@type": "ContactPoint",
+    "email": "sidsri1502@gmail.com",
+    "contactType": "sales",
+    "description": "No signup, fee, card, wallet or third-party form. The request page opens an email in the buyer's own mail client."
+  },
   "seller": {
     "@type": "Person",
     "name": "Siddharth Srivastava",
