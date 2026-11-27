@@ -32,6 +32,7 @@
         "availability": "https://schema.org/InStock",
         "url": "https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit"
       },
+      "alternateUrl": "https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq",
       "proof": [
         "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f"
       ]
@@ -67,6 +68,7 @@
         "availability": "https://schema.org/InStock",
         "url": "https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix"
       },
+      "alternateUrl": "https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix",
       "proof": [
         "https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3",
         "https://github.com/sidsri14/commit/45791ea2af57abfe418ae8943066261de1206c15"

@@ -13,8 +13,10 @@
 ## Offers
 
 - Atomic token-budget reservation retrofit — USD 300 fixed scope — https://contra.com/s/mk7q6YNX-bull-mq-budget-reservation-retrofit
+  - Direct no-signup payment link: https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq
 - Token-2022 starter CI and fee-math repair — USD 150 fixed scope — https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair
 - Checkout Link Consistency Gate — USD 100 fixed scope — https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix
+  - Direct no-signup payment link: https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix
 - Web3 starter CI green + deterministic test harness — USD 150 fixed scope — https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness
   - Searchable Contra service: https://contra.com/s/sAWPAWLs-web3-starter-ci-green-deterministic-test-harness?r=sid_sri_cqx6ygc6
 - One bounded issue + regression test PR — USD 75 fixed scope — https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr

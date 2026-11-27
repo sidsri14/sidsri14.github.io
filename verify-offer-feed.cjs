@@ -57,7 +57,21 @@ if (/<script[^>]+src=/.test(request) || /<form[^>]+action=/.test(request)) {
   throw new Error("request page uses an external script or form endpoint");
 }
 
+const PAYMENT_LINKS = [
+  "https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness",
+  "https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr",
+  "https://contra.com/payment-link/YtsJdAeL-checkout-link-consistency-gate-offline-ci-fix",
+  "https://contra.com/payment-link/AxkJHPK2-atomic-token-budget-reservation-retrofit-bull-mq",
+];
+for (const url of PAYMENT_LINKS) {
+  if (!html.includes(url)) throw new Error(`storefront missing payment link: ${url}`);
+  if (!llms.includes(url)) throw new Error(`llms.txt missing payment link: ${url}`);
+}
+
 const checker = fs.readFileSync("checkout-audit.html", "utf8");
+if (!checker.includes(PAYMENT_LINKS[2])) {
+  throw new Error("free checker does not link its direct payment path");
+}
 if (!checker.includes("PRODUCT_MISMATCH") || !checker.includes("PRICE_MISMATCH")) {
   throw new Error("free checker does not contain the audit rules");
 }
@@ -85,4 +99,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 5 offers, 5 Contra URLs, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 5 offers, 4 direct payment links, free browser-only checker, no-signup email request page, no external form/script, no BOM, no superseded figures");
