@@ -103,6 +103,7 @@
         "availability": "https://schema.org/InStock",
         "url": "https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr"
       },
+      "alternateUrl": "https://contra.com/s/3Z6ePrLW-extend-open-source-one-bounded-issue-regression-test-pr",
       "proof": [
         "https://github.com/sidsri14/checkout-link-audit/commit/9eaa2b3",
         "https://github.com/sidsri14/resilient-ai-worker-kit/commit/7c6a80f",
@@ -115,7 +116,6 @@
     "totalMergedGitHubPullRequests": 30,
     "passingTestsAcrossOwnedRepos": 201,
     "ownedReposWithPassingTests": 15,
-    "pendingHumanAttestation": 159,
-    "note": "159 is pending human attestation and is not used externally. Do not substitute uncited 203 or 227."
+    "note": "Additional tests await human attestation and are not claimed publicly. Do not substitute uncited figures."
   }
 }

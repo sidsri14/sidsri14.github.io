@@ -15,11 +15,13 @@
 - Token-2022 starter CI and fee-math repair — USD 150 fixed scope — https://contra.com/s/AEqXeYBR-token-2022-ci-and-fee-math-repair
 - Checkout Link Consistency Gate — USD 100 fixed scope — https://contra.com/s/UeRvr6OO-checkout-link-consistency-gate-offline-ci-fix
 - Web3 starter CI green + deterministic test harness — USD 150 fixed scope — https://contra.com/payment-link/Lwo3Xem4-web3-starter-ci-green-deterministic-test-harness
+  - Searchable Contra service: https://contra.com/s/sAWPAWLs-web3-starter-ci-green-deterministic-test-harness?r=sid_sri_cqx6ygc6
 - One bounded issue + regression test PR — USD 75 fixed scope — https://contra.com/payment-link/TvcMvVpE-extend-open-source-one-bounded-issue-regression-test-pr
+  - Searchable Contra service: https://contra.com/s/3Z6ePrLW-extend-open-source-one-bounded-issue-regression-test-pr
 
 ## Proof boundaries
 
 - 25 merged upstream PRs / 30 total merged GitHub PRs.
 - 201 passing tests across 15 owned repositories; this is a reconstructible local figure, not a customer benchmark.
-- 159 tests remain pending human attestation and must not be cited externally.
+- Additional tests await human attestation and are not claimed publicly.
 - No crypto, wallet, PayPal, GST, KYC, card-auth, paid upgrade or legal-checkbox handling is offered.

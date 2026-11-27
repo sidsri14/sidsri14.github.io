@@ -26,9 +26,15 @@ const urls = feed.itemListElement.map(item => item.offers.url);
 for (const url of urls) {
   if (!url.startsWith("https://contra.com/")) throw new Error(`bad URL: ${url}`);
 }
+const alternateUrls = feed.itemListElement
+  .map(item => item.alternateUrl)
+  .filter(Boolean);
+for (const url of alternateUrls) {
+  if (!url.startsWith("https://contra.com/")) throw new Error(`bad alternate URL: ${url}`);
+}
 
 const llms = fs.readFileSync("llms.txt", "utf8");
-for (const url of [...urls, feed.requestUrl]) {
+for (const url of [...urls, ...alternateUrls, feed.requestUrl]) {
   if (!llms.includes(url)) throw new Error(`llms.txt missing: ${url}`);
 }
 
@@ -53,6 +59,9 @@ for (const url of ["offers.json", "llms.txt", "request-work.html"]) {
 const allText = files.map(file => fs.readFileSync(file, "utf8")).join("\n");
 for (const bad of ["203 passing", "227 passing", "$203", "$227"]) {
   if (allText.includes(bad)) throw new Error(`superseded figure present: ${bad}`);
+}
+if (/\b(159|203|227)\b/.test(allText)) {
+  throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
 console.log("PASS: 5 offers, 5 Contra URLs, no-signup email request page, no external form/script, no BOM, no superseded figures");
