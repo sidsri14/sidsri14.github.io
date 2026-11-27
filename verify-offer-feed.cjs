@@ -4,6 +4,7 @@ const files = [
   "offers.json",
   "llms.txt",
   "implementation-packages.html",
+  "index.html",
   "request-work.html",
   "checkout-audit.html",
   "fee-math-calculator.html",
@@ -76,6 +77,20 @@ for (const url of PAYMENT_LINKS) {
   if (!llms.includes(url)) throw new Error(`llms.txt missing payment link: ${url}`);
 }
 
+const products = feed.digitalProducts || [];
+if (products.length !== 1) throw new Error("digital product count is not 1");
+const product = products[0];
+if (product.offers.price !== "29" || product.offers.priceCurrency !== "USD") {
+  throw new Error("digital product price is not the advertised USD 29");
+}
+const indexHtml = fs.readFileSync("index.html", "utf8");
+for (const url of [product.url, product.offers.url]) {
+  if (!url.startsWith("https://contra.com/")) throw new Error(`bad digital product URL: ${url}`);
+  if (!llms.includes(url)) throw new Error(`llms.txt missing digital product URL: ${url}`);
+  if (!html.includes(url)) throw new Error(`storefront missing digital product URL: ${url}`);
+  if (!indexHtml.includes(url)) throw new Error(`index.html missing digital product URL: ${url}`);
+}
+
 const checker = fs.readFileSync("checkout-audit.html", "utf8");
 if (!checker.includes(PAYMENT_LINKS[2])) {
   throw new Error("free checker does not link its direct payment path");
@@ -122,4 +137,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 6 offers, 6 direct payment links, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 6 offers, 6 direct payment links, 1 purchasable digital product with direct checkout, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");

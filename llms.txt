@@ -26,6 +26,12 @@
 - Multi-repo CI reliability sprint - up to 5 repos — USD 5000 fixed scope (agreed first milestone only) — https://contra.com/payment-link/ftNK8ixa-multi-repo-ci-reliability-sprint-up-to-5-repos
   - Searchable Contra service: https://contra.com/s/UcXLRcRB-multi-repo-ci-reliability-sprint-up-to-5-repos
 
+## Digital product (immediate download)
+
+- CI Reliability Kit v1 - Node/TypeScript GitHub Actions + offline — USD 29 — https://contra.com/products/r2Kkh8UK-ci-reliability-kit-v1-nodetype-script-git-hub-actions-offline
+  - Direct no-signup checkout: https://contra.com/payment-link/J4RRPBv5-ci-reliability-kit-v1-nodetype-script-git-hub-actions-offline
+  - Contents: two GitHub Actions workflow templates, a zero-dependency offer-feed verifier, two local browser tools, a working example feed and a setup guide. No account, telemetry or network calls; MIT licensed. The scripts are also free in public repositories; the price is for the packaged, documented bundle. Advertised product only, not received income.
+
 ## Proof boundaries
 
 - 25 merged upstream PRs / 30 total merged GitHub PRs.
