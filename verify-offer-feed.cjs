@@ -5,6 +5,7 @@ const files = [
   "llms.txt",
   "implementation-packages.html",
   "index.html",
+  "verification.html",
   "request-work.html",
   "checkout-audit.html",
   "fee-math-calculator.html",
@@ -95,6 +96,36 @@ for (const url of [product.url, product.offers.url]) {
   if (!indexHtml.includes(url)) throw new Error(`index.html missing digital product URL: ${url}`);
 }
 
+for (const [file, source, expectProduct] of [
+  ["implementation-packages.html", html, true],
+  ["index.html", indexHtml, false],
+]) {
+  const match = source.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  if (!match) throw new Error(`${file} missing inline JSON-LD`);
+  let ld;
+  try {
+    ld = JSON.parse(match[1]);
+  } catch (error) {
+    throw new Error(`${file} has invalid JSON-LD: ${error.message}`);
+  }
+  const graph = ld["@graph"];
+  if (!Array.isArray(graph)) throw new Error(`${file} JSON-LD has no @graph`);
+  const catalog = graph.find(node => node["@type"] === "OfferCatalog");
+  if (!catalog) throw new Error(`${file} JSON-LD has no OfferCatalog`);
+  if (catalog.itemListElement.length !== 7) throw new Error(`${file} JSON-LD offer count is not 7`);
+  for (const url of urls) {
+    if (!source.includes(url)) throw new Error(`${file} missing checkout link: ${url}`);
+  }
+  const hasProduct = graph.some(node => node["@type"] === "Product");
+  if (hasProduct !== expectProduct) throw new Error(`${file} JSON-LD product state is wrong`);
+  if (expectProduct) {
+    const ldProduct = graph.find(node => node["@type"] === "Product");
+    if (ldProduct.offers.url !== product.offers.url) {
+      throw new Error("JSON-LD product checkout does not match feed");
+    }
+  }
+}
+
 const checker = fs.readFileSync("checkout-audit.html", "utf8");
 if (!checker.includes(PAYMENT_LINKS[2])) {
   throw new Error("free checker does not link its direct payment path");
@@ -141,4 +172,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 7 offers, 7 direct payment links, 1 purchasable digital product with direct checkout, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 7 offers, 7 direct payment links, 1 purchasable digital product with direct checkout, valid inline JSON-LD on both discovery pages, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
