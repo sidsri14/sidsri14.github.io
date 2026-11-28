@@ -160,8 +160,22 @@ for (const gate of ["wallet", "captcha", "KYC"]) {
 }
 
 const sitemap = fs.readFileSync("sitemap.xml", "utf8");
-for (const url of ["offers.json", "llms.txt", "request-work.html", "checkout-audit.html", "fee-math-calculator.html"]) {
+for (const url of ["offers.json", "llms.txt", "request-work.html", "checkout-audit.html", "fee-math-calculator.html", "verification.html"]) {
   if (!sitemap.includes(url)) throw new Error(`sitemap does not include: ${url}`);
+}
+
+const verificationHtml = fs.readFileSync("verification.html", "utf8");
+for (const [file, source, canonical] of [
+  ["index.html", indexHtml, "https://sidsri14.github.io/"],
+  ["implementation-packages.html", html, "https://sidsri14.github.io/implementation-packages.html"],
+  ["verification.html", verificationHtml, "https://sidsri14.github.io/verification.html"],
+]) {
+  if (!source.includes(`rel="canonical" href="${canonical}"`)) {
+    throw new Error(`${file} missing canonical URL`);
+  }
+  if (!source.includes(`property="og:url" content="${canonical}"`)) {
+    throw new Error(`${file} missing Open Graph URL`);
+  }
 }
 
 const allText = files.map(file => fs.readFileSync(file, "utf8")).join("\n");
@@ -172,4 +186,4 @@ if (/\b(159|203|227)\b/.test(allText)) {
   throw new Error("public discovery files cite an attestation-pending or uncited figure");
 }
 
-console.log("PASS: 7 offers, 7 direct payment links, 1 purchasable digital product with direct checkout, valid inline JSON-LD on both discovery pages, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");
+console.log("PASS: 7 offers, 7 direct payment links, 1 purchasable digital product with direct checkout, valid inline JSON-LD on both discovery pages, canonical + Open Graph URLs and sitemap proof page, 2 free browser-only tools, no-signup email request page, no external form/script, no BOM, no superseded figures");

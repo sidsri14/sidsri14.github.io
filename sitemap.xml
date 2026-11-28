@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://sidsri14.github.io/</loc>
-    <lastmod>2026-11-11</lastmod>
+    <lastmod>2026-11-28</lastmod>
   </url>
   <url>
     <loc>https://sidsri14.github.io/articles/slash-ai-api-costs-hybrid-router.html</loc>
@@ -34,7 +34,11 @@
   </url>
   <url>
     <loc>https://sidsri14.github.io/implementation-packages.html</loc>
-    <lastmod>2026-11-27</lastmod>
+    <lastmod>2026-11-28</lastmod>
+  </url>
+  <url>
+    <loc>https://sidsri14.github.io/verification.html</loc>
+    <lastmod>2026-11-28</lastmod>
   </url>
   <url>
     <loc>https://sidsri14.github.io/offers.json</loc>
